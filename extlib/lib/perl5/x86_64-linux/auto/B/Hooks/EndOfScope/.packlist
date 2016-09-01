@@ -1,0 +1,13 @@
+/cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5/B/Hooks/EndOfScope.pm
+/cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5/B/Hooks/EndOfScope/PP.pm
+/cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5/B/Hooks/EndOfScope/PP/FieldHash.pm
+/cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5/B/Hooks/EndOfScope/PP/HintHash.pm
+/cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5/B/Hooks/EndOfScope/XS.pm
+/export/apps/perlbrew/perls/orengocat-perl/lib/site_perl/5.22.1/B/Hooks/EndOfScope.pm
+/export/apps/perlbrew/perls/orengocat-perl/lib/site_perl/5.22.1/B/Hooks/EndOfScope/PP.pm
+/export/apps/perlbrew/perls/orengocat-perl/lib/site_perl/5.22.1/B/Hooks/EndOfScope/PP/FieldHash.pm
+/export/apps/perlbrew/perls/orengocat-perl/lib/site_perl/5.22.1/B/Hooks/EndOfScope/PP/HintHash.pm
+/export/apps/perlbrew/perls/orengocat-perl/lib/site_perl/5.22.1/B/Hooks/EndOfScope/XS.pm
+/export/apps/perlbrew/perls/orengocat-perl/man/man3/B::Hooks::EndOfScope.3
+/export/apps/perlbrew/perls/orengocat-perl/man/man3/B::Hooks::EndOfScope::PP.3
+/export/apps/perlbrew/perls/orengocat-perl/man/man3/B::Hooks::EndOfScope::XS.3

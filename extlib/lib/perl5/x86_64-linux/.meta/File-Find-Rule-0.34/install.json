@@ -1,0 +1,1 @@
+{"provides":{"File::Find::Rule":{"file":"lib/File/Find/Rule.pm","version":"0.34"},"File::Find::Rule::Test::ATeam":{"file":"testdir/lib/File/Find/Rule/Test/ATeam.pm"}},"pathname":"R/RC/RCLAMP/File-Find-Rule-0.34.tar.gz","target":"File::Find::Rule","version":"0.34","dist":"File-Find-Rule-0.34","name":"File::Find::Rule"}

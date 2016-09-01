@@ -1,0 +1,63 @@
+{
+   "abstract" : "Low-level HTTP connection (client)",
+   "author" : [
+      "Gisle Aas <gisle@activestate.com>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "ExtUtils::MakeMaker version 7.052, CPAN::Meta::Converter version 2.150004, CPAN::Meta::Converter version 2.150001",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Net-HTTP",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "runtime" : {
+         "recommends" : {
+            "IO::Socket::SSL" : "1.38"
+         },
+         "requires" : {
+            "Compress::Raw::Zlib" : "0",
+            "IO::Select" : "0",
+            "IO::Socket::INET" : "0",
+            "IO::Uncompress::Gunzip" : "0",
+            "URI" : "0",
+            "perl" : "5.006002"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "mailto" : "bug-Net-HTTP@rt.cpan.org",
+         "web" : "https://rt.cpan.org/Public/Dist/Display.html?Name=Net-HTTP"
+      },
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/libwww-perl/net-http.git",
+         "web" : "https://github.com/libwww-perl/net-http"
+      },
+      "x_IRC" : "irc://irc.perl.org/#lwp",
+      "x_MailingList" : "mailto:libwww@perl.org"
+   },
+   "version" : "6.09",
+   "x_serialization_backend" : "JSON::PP version 2.27300"
+}
