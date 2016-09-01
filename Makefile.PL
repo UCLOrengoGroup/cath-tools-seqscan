@@ -10,6 +10,7 @@ requires 'MooX::Options' => '';
 requires 'Path::Class' => '';
 requires 'REST::Client' => '';
 requires 'URI';
+requires 'JSON::Any';
 requires 'Log::Dispatch';
 
 WriteAll;
