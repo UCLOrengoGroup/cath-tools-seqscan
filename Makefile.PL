@@ -14,7 +14,3 @@ requires 'JSON::Any';
 requires 'Log::Dispatch';
 
 WriteAll;
-
-if ($Module::Install::AUTHOR) {
-  system('pod2text lib/Cath/Tools/Seqscan.pm > README');
-}
