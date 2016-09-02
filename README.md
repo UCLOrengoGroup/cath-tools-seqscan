@@ -1,15 +1,29 @@
 # cath-tools-seqscan
-Scan and align protein sequence against functional families in CATH
+Tool to scan and align a protein sequence against functional families in CATH
 
-Currently this is just a Perl script demonstrating how the CATH API can be used.
+Currently this consists of a Perl script demonstrating how the CATH API can be used.
 
+## Overview
  - submit sequence, get a task id
  - check task id until job is done
  - retrieve results
  - get alignment between query sequence and best match
  - write alignment to file
 
-Lots of room for improvement, please log issues in GitHub.
+## Usage
+```
+perl ./script/cath-tools-seqscan.pl --in=query.fasta --out=best_match.fasta
+```
+
+## Dependencies
+All non-core Perl dependencies have been bundled into this repo, so the script
+should Just Work (tm) (tested on Ubuntu 16.04, MacBook)
+
+
+## Todo
+Lots of room for improvement - this was intended as a proof of concept rather
+than a genuinely useful script in its own right. Happy to make improvements
+though - please log issues with GitHub.
 
 ```
 USAGE: cath-tools-seqscan.pl [-h] [long options...]
