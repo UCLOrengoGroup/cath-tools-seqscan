@@ -10,21 +10,12 @@ Currently this consists of a Perl script demonstrating how the CATH API can be u
  - get alignment between query sequence and best match
  - write alignment to file
 
-## Usage
+## Example
 ```
 perl ./script/cath-tools-seqscan.pl --in=query.fasta --out=best_match.fasta
 ```
 
-## Dependencies
-All non-core Perl dependencies have been bundled into this repo, so the script
-should Just Work (tm) (tested on Ubuntu 16.04, MacBook)
-
-
-## Todo
-Lots of room for improvement - this was intended as a proof of concept rather
-than a genuinely useful script in its own right. Happy to make improvements
-though - please log issues with GitHub.
-
+## Usage
 ```
 USAGE: cath-tools-seqscan.pl [-h] [long options...]
 
@@ -37,3 +28,12 @@ USAGE: cath-tools-seqscan.pl [-h] [long options...]
     --help         show a long help message
     --man          show the manual
 ```
+
+## Dependencies
+All non-core Perl dependencies have been bundled into this repo, so the script
+should Just Work (tested on Ubuntu 16.04, MacBook).
+
+## Todo
+Lots of room for improvement - this was intended as a proof of concept rather
+than a genuinely useful script in its own right. Happy to make improvements
+though - please log issues with GitHub.
