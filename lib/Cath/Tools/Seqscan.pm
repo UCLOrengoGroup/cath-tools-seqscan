@@ -1,5 +1,16 @@
 package Cath::Tools::Seqscan;
 
+=head1 NAME
+
+Cath::Tools::Seqscan - scan sequence against funfams in CATH
+
+=head1 SYNOPSIS
+
+  $app = Cath::Tools::Seqscan->new_with_options()
+  $app->run;
+  
+=cut
+
 use Moo;
 use MooX::Options;
 use JSON::Any;
