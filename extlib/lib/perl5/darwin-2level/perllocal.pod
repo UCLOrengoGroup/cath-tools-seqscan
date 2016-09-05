@@ -86,3 +86,25 @@ C<EXE_FILES: >
 
 =back
 
+=head2 Mon Sep  5 20:51:13 2016: C<Module> L<Unicode::LineBreak|Unicode::LineBreak>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/ian/Documents/Code/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2016.003>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

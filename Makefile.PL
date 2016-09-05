@@ -12,5 +12,6 @@ requires 'REST::Client' => '';
 requires 'URI';
 requires 'JSON::Any';
 requires 'Log::Dispatch';
+requires 'Text::LineFold';
 
 WriteAll;
