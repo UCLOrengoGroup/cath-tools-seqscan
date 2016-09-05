@@ -8,7 +8,7 @@ Cath::Tools::Seqscan - scan sequence against funfams in CATH
 
   $app = Cath::Tools::Seqscan->new_with_options()
   $app->run;
-  
+
 =cut
 
 use Moo;
@@ -50,10 +50,17 @@ option 'in' => (
 );
 
 option 'out' => (
-  doc => 'Alignment to the best matching FunFam (FASTA file)',
+  doc => 'Directory to output alignments (FASTA file)',
   format => 's',
   is => 'ro',
-  required => 1,
+  default => sub { dir() }
+);
+
+option 'max_aln' => (
+  doc => 'Maximum number of alignments to output (default: 5)',
+  format => 'i',
+  is => 'ro',
+  default => 5,
 );
 
 sub run {
@@ -61,8 +68,16 @@ sub run {
 
   my $query = file( $self->in )->slurp;
 
-  my $client = $self->client;
-  my $json   = $self->json;
+  my $client  = $self->client;
+  my $json    = $self->json;
+  my $dir_out = dir( $self->out );
+  my $max_aln_count = $self->max_aln;
+
+  if ( ! -d $dir_out ) {
+    $log->info( "Output directory `$dir_out` does not exist - attempting to create..." );
+    $dir_out->mktree
+      or die "! Error: failed to create directory: $!";
+  }
 
   $log->info( sprintf "Setting host to %s\n", $self->host );
   $client->setHost( $self->host );
@@ -106,15 +121,22 @@ sub run {
     $log->info( sprintf "HIT  %-30s %.1e %s\n", $hit->{match_id}, $hit->{significance}, $hit->{match_description} );
   }
 
-  my $first_hit_id = $result->{hits}->[0]->{match_id};
-  $log->info( "Retrieving alignment for best hit ($first_hit_id)...\n");
+  my @hits = @{ $result->{hits} };
 
-  my $align_body = $json->to_json( { task_id => $task_id, hit_id => $first_hit_id } );
-  my $align_content = $self->POST( "/search/by_sequence/align_hit", $align_body );
+  for (my $hit_idx=0; $hit_idx < $max_aln_count && $hit_idx < scalar @hits; $hit_idx++) {
+    my $hit_id = $hits[ $hit_idx ]->{match_id};
 
-  my $file_out = $self->out;
-  $log->info( "Writing alignment to file $file_out\n" );
-  file( $file_out )->spew( $align_content );
+    (my $file_name = $hit_id ) =~ s{[^0-9a-zA-Z\-_\.]}{-}g;
+    my $file_out = $dir_out->file( $file_name . ".fasta" );
+
+    $log->info( sprintf "Retrieving alignment [%d] %s ...\n", $hit_idx + 1, $hit_id );
+
+    my $align_body = $json->to_json( { task_id => $task_id, hit_id => $hit_id } );
+    my $align_content = $self->POST( "/search/by_sequence/align_hit", $align_body );
+
+    $log->info( "Writing alignment to file $file_out\n" );
+    file( $file_out )->spew( $align_content );
+  }
 }
 
 sub POST {
