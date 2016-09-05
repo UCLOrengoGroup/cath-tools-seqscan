@@ -56,6 +56,13 @@ option 'out' => (
   default => sub { dir() }
 );
 
+option 'max_hits' => (
+  doc => 'Maximum number of hits to output (default: 50)',
+  format => 'i',
+  is => 'ro',
+  default => 50,
+);
+
 option 'max_aln' => (
   doc => 'Maximum number of alignments to output (default: 5)',
   format => 'i',
@@ -68,13 +75,14 @@ sub run {
 
   my $query = file( $self->in )->slurp;
 
-  my $client  = $self->client;
-  my $json    = $self->json;
-  my $dir_out = dir( $self->out );
+  my $client        = $self->client;
+  my $json          = $self->json;
+  my $dir_out       = dir( $self->out );
   my $max_aln_count = $self->max_aln;
+  my $max_hit_count = $self->max_hits;
 
   if ( ! -d $dir_out ) {
-    $log->info( "Output directory `$dir_out` does not exist - attempting to create..." );
+    $log->info( "Output directory `$dir_out` does not exist - creating ...\n" );
     $dir_out->mkpath
       or die "! Error: failed to create directory: $!";
   }
@@ -110,7 +118,7 @@ sub run {
 
   $log->info( "Retrieving scan results for task id: $task_id\n" );
 
-  my $results_content = $self->GET( "/search/by_funfhmmer/results/$task_id" );
+  my $results_content = $self->GET( "/search/by_funfhmmer/results/$task_id?max_hits=$max_hit_count" );
   my $scan = $json->from_json( $results_content )->{funfam_scan};
 
   # prints out the entire data structure
