@@ -11,17 +11,28 @@ Currently this consists of a Perl script demonstrating how the CATH API can be u
  - write alignment to file
 
 ## Example
+
+Submit a query sequence and output the alignment for the 5 matches to the current directory:
+
 ```
-perl ./script/cath-tools-seqscan.pl --in=query.fasta --out=best_match.fasta
+perl script/cath-tools-seqscan.pl --in=query.fasta
+```
+
+Output alignments for the top 10 matches to a specific directory:
+
+```
+perl script/cath-tools-seqscan.pl --in=query.fasta --out=aln_dir --max_aln=10
 ```
 
 ## Usage
 ```
-USAGE: cath-tools-seqscan.pl [-h] [long options...]
+USAGE: cath-tools-seqscan.pl [-h] [long options...] --in=query.fasta
 
-    --host=String  Host to use for API requests
     --in=String    Query sequence to submit (FASTA file)
-    --out=String   Alignment to the best matching FunFam (FASTA file)
+
+    --host=String  Host to use for API requests (default: beta.cathdb.info)
+    --out=String   Directory to output alignments (default ./)
+    --max_aln      Maximum number of alignments to output (default: 5)
 
     --usage        show a short help message
     -h             show a compact help message

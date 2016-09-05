@@ -75,7 +75,7 @@ sub run {
 
   if ( ! -d $dir_out ) {
     $log->info( "Output directory `$dir_out` does not exist - attempting to create..." );
-    $dir_out->mktree
+    $dir_out->mkpath
       or die "! Error: failed to create directory: $!";
   }
 
