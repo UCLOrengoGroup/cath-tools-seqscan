@@ -30,15 +30,15 @@ USAGE: cath-tools-seqscan.pl [-h] [long options...] --in=query.fasta
 
     --in=String    Query sequence to submit (FASTA file)
 
-    --host=String  Host to use for API requests (default: beta.cathdb.info)
-    --out=String   Directory to output alignments (default ./)
-    --max_aln      Maximum number of alignments to output (default: 5)
-    --max_hits     Maximum number of hits to report (default: 50)
+    --host=String    API host (default: 'beta.cathdb.info')
+    --out=String     directory to output alignments (default './')
+    --max_aln=Int    max number of alignments to output (default: 5)
+    --max_hits=Int   max number of hits to report (default: 50)
 
-    --usage        show a short help message
-    -h             show a compact help message
-    --help         show a long help message
-    --man          show the manual
+    --usage          show a short help message
+    -h               show a compact help message
+    --help           show a long help message
+    --man            show the manual
 ```
 
 ## Dependencies
