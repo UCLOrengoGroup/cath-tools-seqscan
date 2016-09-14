@@ -49,3 +49,19 @@ should Just Work (tested on Ubuntu 16.04, MacBook).
 Lots of room for improvement - this was intended as a proof of concept rather
 than a genuinely useful script in its own right. Happy to make improvements
 though - please log issues with GitHub.
+
+## Mapping sequence to structure
+
+**TL;DR** the numbering in the FASTA headers of the resulting alignments is based on the full protein sequence (```biomap``` entries) or the PDB SEQRES records (```cath```).
+
+It's not always trivial to map between residues in a sequence alignment and residues in a 3D structure.
+A couple of issues (#4 and #5) highlight this. The sequence headers in the alignment provide
+information on the start/stop positions for each entry. For the ```biomap``` entries, this is a sequential
+numbering based on the full protein sequence. For the ```cath``` entries, this is usually based on the PDB
+residue labels that appear in the ATOM records of the PDB (e.g. not sequential numbers). To further complicate things, the sequences used for the CATH domains actually come from the PDB SEQRES records,
+rather than the ATOM records. As a result, the domain sequences can contain residues not observed in the PDB
+structure and this can affect the numbering scheme.
+
+So, long story short - the script currently contains a hack that will 'correct' the
+headers in the resulting sequence alignment so that the CATH domains will have start/stop
+positions that directly map to the SEQRES records.
