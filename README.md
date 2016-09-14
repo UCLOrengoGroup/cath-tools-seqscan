@@ -52,7 +52,10 @@ though - please log issues with GitHub.
 
 ## Mapping sequence to structure
 
-**TL;DR** the numbering in the FASTA headers of the resulting alignments is based on the full protein sequence (```biomap``` entries) or the PDB SEQRES records (```cath```).
+**TL;DR**: the numbering in the FASTA headers of the resulting alignments depends on the type of entry:
+
+ * ```biomap```: numbering is based on the full protein sequence
+ * ```cath```: numbering is based on the SEQRES records in the PDB chain (the script applies a fix to correct the incoming alignments)
 
 It's not always trivial to map between residues in a sequence alignment and residues in a 3D structure.
 A couple of issues (#4 and #5) highlight this. The sequence headers in the alignment provide
