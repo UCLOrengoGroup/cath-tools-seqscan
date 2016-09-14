@@ -13,5 +13,7 @@ requires 'URI';
 requires 'JSON::Any';
 requires 'Log::Dispatch';
 requires 'Text::LineFold';
+requires 'Type::Tiny';
+requires 'IO::String';
 
 WriteAll;
