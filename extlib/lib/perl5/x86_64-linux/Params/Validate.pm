@@ -5,7 +5,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.24';
+our $VERSION = '1.25';
 
 use Exporter;
 use Module::Implementation;
@@ -77,7 +77,7 @@ Params::Validate - Validate method/function parameters
 
 =head1 VERSION
 
-version 1.24
+version 1.25
 
 =head1 SYNOPSIS
 
@@ -867,7 +867,7 @@ Ilya Martynov <ilya@martynov.org>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Ivan Bessarabov J.R. Mash Noel Maddy Olivier Mengué Tony Cook Vincent Pit
+=for stopwords Ivan Bessarabov J.R. Mash Karen Etheridge Noel Maddy Olivier Mengué Tony Cook Vincent Pit
 
 =over 4
 
@@ -878,6 +878,10 @@ Ivan Bessarabov <ivan@bessarabov.ru>
 =item *
 
 J.R. Mash <jmash.code@gmail.com>
+
+=item *
+
+Karen Etheridge <ether@cpan.org>
 
 =item *
 
@@ -897,7 +901,7 @@ Vincent Pit <perl@profvince.com>
 
 =back
 
-=head1 COPYRIGHT AND LICENCE
+=head1 COPYRIGHT AND LICENSE
 
 This software is Copyright (c) 2001 - 2016 by Dave Rolsky and Ilya Martynov.
 

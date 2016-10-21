@@ -15,13 +15,13 @@ my $Test;
 unless (defined $Test::Deep::NoTest::NoTest)
 {
 # for people who want eq_deeply but not Test::Builder
-	require Test::Builder;
-	$Test = Test::Builder->new;
+  require Test::Builder;
+  $Test = Test::Builder->new;
 }
 
 our ($Stack, %Compared, $CompareCache, %WrapCache, $Shallow);
 
-our $VERSION = '1.120';
+our $VERSION = '1.123';
 $VERSION =~ tr/_//d;
 
 require Exporter;
@@ -29,6 +29,8 @@ our @ISA = qw( Exporter );
 
 our $Snobby = 1; # should we compare classes?
 our $Expects = 0; # are we comparing got vs expect or expect vs expect
+
+our $LeafWrapper; # to wrap simple values in a test; if not set, shallow()
 
 our $DNE = \"";
 our $DNE_ADDR = Scalar::Util::refaddr($DNE);
@@ -72,18 +74,18 @@ my @CONSTRUCTORS_FROM_CLASSES;
 
 while (my ($pkg, $name) = splice @constructors, 0, 2)
 {
-	$name = lc($pkg) unless $name;
-	my $full_pkg = "Test::Deep::$pkg";
-	my $file = "$full_pkg.pm";
-	$file =~ s#::#/#g;
-	my $sub = sub {
-		require $file;
-		return $full_pkg->new(@_);
-	};
-	{
-		no strict 'refs';
-		*{$name} = $sub;
-	}
+  $name = lc($pkg) unless $name;
+  my $full_pkg = "Test::Deep::$pkg";
+  my $file = "$full_pkg.pm";
+  $file =~ s#::#/#g;
+  my $sub = sub {
+    require $file;
+    return $full_pkg->new(@_);
+  };
+  {
+    no strict 'refs';
+    *{$name} = $sub;
+  }
 
   push @CONSTRUCTORS_FROM_CLASSES, $name;
 }
@@ -183,152 +185,152 @@ sub import {
 # 2, so we can figure out (assuming the caller is not buggy).
 sub isa
 {
-	if (@_ == 1)
-	{
-		goto &Isa;
-	}
-	else
-	{
-		goto &UNIVERSAL::isa;
-	}
+  if (@_ == 1)
+  {
+    goto &Isa;
+  }
+  else
+  {
+    goto &UNIVERSAL::isa;
+  }
 }
 
 sub cmp_deeply
 {
-	my ($d1, $d2, $name) = @_;
+  my ($d1, $d2, $name) = @_;
 
-	my ($ok, $stack) = cmp_details($d1, $d2);
+  my ($ok, $stack) = cmp_details($d1, $d2);
 
-	if (not $Test->ok($ok, $name))
-	{
-		my $diag = deep_diag($stack);
-		$Test->diag($diag);
-	}
+  if (not $Test->ok($ok, $name))
+  {
+    my $diag = deep_diag($stack);
+    $Test->diag($diag);
+  }
 
-	return $ok;
+  return $ok;
 }
 
 sub cmp_details
 {
-	my ($d1, $d2) = @_;
+  my ($d1, $d2) = @_;
 
-	local $Stack = Test::Deep::Stack->new;
-	local $CompareCache = Test::Deep::Cache->new;
-	local %WrapCache;
+  local $Stack = Test::Deep::Stack->new;
+  local $CompareCache = Test::Deep::Cache->new;
+  local %WrapCache;
 
-	my $ok = descend($d1, $d2);
+  my $ok = descend($d1, $d2);
 
-	return ($ok, $Stack);
+  return ($ok, $Stack);
 }
 
 sub eq_deeply
 {
-	my ($d1, $d2) = @_;
+  my ($d1, $d2) = @_;
 
-	my ($ok) = cmp_details($d1, $d2);
+  my ($ok) = cmp_details($d1, $d2);
 
-	return $ok
+  return $ok
 }
 
 sub eq_deeply_cache
 {
-	# this is like cross between eq_deeply and descend(). It doesn't start
-	# with a new $CompareCache but if the comparison fails it will leave
-	# $CompareCache as if nothing happened. However, if the comparison
-	# succeeds then $CompareCache retains all the new information
+  # this is like cross between eq_deeply and descend(). It doesn't start
+  # with a new $CompareCache but if the comparison fails it will leave
+  # $CompareCache as if nothing happened. However, if the comparison
+  # succeeds then $CompareCache retains all the new information
 
-	# this allows Set and Bag to handle circular refs
+  # this allows Set and Bag to handle circular refs
 
-	my ($d1, $d2, $name) = @_;
+  my ($d1, $d2, $name) = @_;
 
-	local $Stack = Test::Deep::Stack->new;
-	$CompareCache->local;
+  local $Stack = Test::Deep::Stack->new;
+  $CompareCache->local;
 
-	my $ok = descend($d1, $d2);
+  my $ok = descend($d1, $d2);
 
-	$CompareCache->finish($ok);
+  $CompareCache->finish($ok);
 
-	return $ok;
+  return $ok;
 }
 
 sub deep_diag
 {
-	my $stack = shift;
-	# ick! incArrow and other things expect the stack has to be visible
-	# in a well known place . TODO clean this up
-	local $Stack = $stack;
+  my $stack = shift;
+  # ick! incArrow and other things expect the stack has to be visible
+  # in a well known place . TODO clean this up
+  local $Stack = $stack;
 
-	my $where = render_stack('$data', $stack);
+  my $where = render_stack('$data', $stack);
 
-	confess "No stack to diagnose" unless $stack;
-	my $last = $stack->getLast;
+  confess "No stack to diagnose" unless $stack;
+  my $last = $stack->getLast;
 
-	my $diag;
-	my $message;
-	my $got;
-	my $expected;
+  my $diag;
+  my $message;
+  my $got;
+  my $expected;
 
-	my $exp = $last->{exp};
-	if (Scalar::Util::blessed($exp))
-	{
-		if ($exp->can("diagnostics"))
-		{
-			$diag = $exp->diagnostics($where, $last);
-			$diag =~ s/\n+$/\n/;
-		}
-		else
-		{
-			if ($exp->can("diag_message"))
-			{
-				$message = $exp->diag_message($where);
-			}
-		}
-	}
+  my $exp = $last->{exp};
+  if (Scalar::Util::blessed($exp))
+  {
+    if ($exp->can("diagnostics"))
+    {
+      $diag = $exp->diagnostics($where, $last);
+      $diag =~ s/\n+$/\n/;
+    }
+    else
+    {
+      if ($exp->can("diag_message"))
+      {
+        $message = $exp->diag_message($where);
+      }
+    }
+  }
 
-	if (not defined $diag)
-	{
-		$got = $exp->renderGot($last->{got}) unless defined $got;
-		$expected = $exp->renderExp unless defined $expected;
-		$message = "Compared $where" unless defined $message;
+  if (not defined $diag)
+  {
+    $got = $exp->renderGot($last->{got}) unless defined $got;
+    $expected = $exp->renderExp unless defined $expected;
+    $message = "Compared $where" unless defined $message;
 
-		$diag = <<EOM
+    $diag = <<EOM
 $message
    got : $got
 expect : $expected
 EOM
-	}
+  }
 
-	return $diag;
+  return $diag;
 }
 
 sub render_val
 {
-	my $val = shift;
+  my $val = shift;
 
-	my $rendered;
-	if (defined $val)
-	{
-	 	$rendered = ref($val) ?
-	 		(Scalar::Util::refaddr($val) eq $DNE_ADDR ?
-	 			"Does not exist" :
-				overload::StrVal($val)
-			) :
-			qq('$val');
-	}
-	else
-	{
-		$rendered = "undef";
-	}
+  my $rendered;
+  if (defined $val)
+  {
+     $rendered = ref($val) ?
+       (Scalar::Util::refaddr($val) eq $DNE_ADDR ?
+         "Does not exist" :
+        overload::StrVal($val)
+      ) :
+      qq('$val');
+  }
+  else
+  {
+    $rendered = "undef";
+  }
 
-	return $rendered;
+  return $rendered;
 }
 
 sub descend
 {
-	my ($d1, $d2) = @_;
+  my ($d1, $d2) = @_;
 
-	if (!ref $d1 and !ref $d2)
-	{
+  if (!ref $d1 and !ref $d2)
+  {
     # Shortcut comparison for the non-reference case.
     if (defined $d1)
     {
@@ -338,166 +340,168 @@ sub descend
     {
       return 1 if !defined $d2;
     }
-	}
+  }
 
-	if (! $Expects and Scalar::Util::blessed($d1) and $d1->isa("Test::Deep::Cmp"))
-	{
-		my $where = $Stack->render('$data');
-		confess "Found a special comparison in $where\nYou can only use specials in the expects structure";
-	}
+  if (! $Expects and Scalar::Util::blessed($d1) and $d1->isa("Test::Deep::Cmp"))
+  {
+    my $where = $Stack->render('$data');
+    confess "Found a special comparison in $where\nYou can only use specials in the expects structure";
+  }
 
-	if (ref $d1 and ref $d2)
-	{
-		# this check is only done when we're comparing 2 expecteds against each
-		# other
+  if (ref $d1 and ref $d2)
+  {
+    # this check is only done when we're comparing 2 expecteds against each
+    # other
 
-		if ($Expects and Scalar::Util::blessed($d1) and $d1->isa("Test::Deep::Cmp"))
-		{
-			# check they are the same class
-			return 0 unless Test::Deep::blessed(Scalar::Util::blessed($d2))->descend($d1);
-			if ($d1->can("compare"))
-			{
-				return $d1->compare($d2);
-			}
-		}
+    if ($Expects and Scalar::Util::blessed($d1) and $d1->isa("Test::Deep::Cmp"))
+    {
+      # check they are the same class
+      return 0 unless Test::Deep::blessed(Scalar::Util::blessed($d2))->descend($d1);
+      if ($d1->can("compare"))
+      {
+        return $d1->compare($d2);
+      }
+    }
 
-		my $s1 = Scalar::Util::refaddr($d1);
-		my $s2 = Scalar::Util::refaddr($d2);
+    my $s1 = Scalar::Util::refaddr($d1);
+    my $s2 = Scalar::Util::refaddr($d2);
 
-		if ($s1 eq $s2)
-		{
-			return 1;
-		}
-		if ($CompareCache->cmp($d1, $d2))
-		{
-			# we've tried comparing these already so either they turned out to
-			# be the same or we must be in a loop and we have to assume they're
-			# the same
+    if ($s1 eq $s2)
+    {
+      return 1;
+    }
+    if ($CompareCache->cmp($d1, $d2))
+    {
+      # we've tried comparing these already so either they turned out to
+      # be the same or we must be in a loop and we have to assume they're
+      # the same
 
-			return 1;
-		}
-		else
-		{
-			$CompareCache->add($d1, $d2)
-		}
-	}
+      return 1;
+    }
+    else
+    {
+      $CompareCache->add($d1, $d2)
+    }
+  }
 
-	$d2 = wrap($d2);
+  $d2 = wrap($d2);
 
-	$Stack->push({exp => $d2, got => $d1});
+  $Stack->push({exp => $d2, got => $d1});
 
-	if (ref($d1) and (Scalar::Util::refaddr($d1) == $DNE_ADDR))
-	{
-		# whatever it was supposed to be, it didn't exist and so it's an
-		# automatic fail
-		return 0;
-	}
+  if (ref($d1) and (Scalar::Util::refaddr($d1) == $DNE_ADDR))
+  {
+    # whatever it was supposed to be, it didn't exist and so it's an
+    # automatic fail
+    return 0;
+  }
 
-	if ($d2->descend($d1))
-	{
-#		print "d1 = $d1, d2 = $d2\nok\n";
-		$Stack->pop;
+  if ($d2->descend($d1))
+  {
+#    print "d1 = $d1, d2 = $d2\nok\n";
+    $Stack->pop;
 
-		return 1;
-	}
-	else
-	{
-#		print "d1 = $d1, d2 = $d2\nnot ok\n";
-		return 0;
-	}
+    return 1;
+  }
+  else
+  {
+#    print "d1 = $d1, d2 = $d2\nnot ok\n";
+    return 0;
+  }
 }
 
 sub wrap
 {
-	my $data = shift;
+  my $data = shift;
 
-	return $data if Scalar::Util::blessed($data) and $data->isa("Test::Deep::Cmp");
+  return $data if Scalar::Util::blessed($data) and $data->isa("Test::Deep::Cmp");
 
-	my ($class, $base) = class_base($data);
+  my ($class, $base) = class_base($data);
 
-	my $cmp;
+  my $cmp;
 
-	if($base eq '')
-	{
-		$cmp = shallow($data);
-	}
-	else
-	{
-		my $addr = Scalar::Util::refaddr($data);
+  if($base eq '')
+  {
+    $cmp = $Test::Deep::LeafWrapper
+         ? $Test::Deep::LeafWrapper->($data)
+         : shallow($data);
+  }
+  else
+  {
+    my $addr = Scalar::Util::refaddr($data);
 
-		return $WrapCache{$addr} if $WrapCache{$addr};
+    return $WrapCache{$addr} if $WrapCache{$addr};
 
-		if($base eq 'ARRAY')
-		{
-			$cmp = array($data);
-		}
-		elsif($base eq 'HASH')
-		{
-			$cmp = hash($data);
-		}
-		elsif($base eq 'SCALAR' or $base eq 'REF')
-		{
-			$cmp = scalref($data);
-		}
-		elsif(($base eq 'Regexp') or ($base eq 'REGEXP'))
-		{
-			$cmp = regexpref($data);
-		}
-		else
-		{
-			$cmp = shallow($data);
-		}
+    if($base eq 'ARRAY')
+    {
+      $cmp = array($data);
+    }
+    elsif($base eq 'HASH')
+    {
+      $cmp = hash($data);
+    }
+    elsif($base eq 'SCALAR' or $base eq 'REF')
+    {
+      $cmp = scalref($data);
+    }
+    elsif(($base eq 'Regexp') or ($base eq 'REGEXP'))
+    {
+      $cmp = regexpref($data);
+    }
+    else
+    {
+      $cmp = shallow($data);
+    }
 
-		$WrapCache{$addr} = $cmp;
-	}
-	return $cmp;
+    $WrapCache{$addr} = $cmp;
+  }
+  return $cmp;
 }
 
 sub class_base
 {
-	my $val = shift;
+  my $val = shift;
 
-	if (ref $val)
-	{
-		my $blessed = Scalar::Util::blessed($val);
-		$blessed = defined($blessed) ? $blessed : "";
-		my $reftype = Scalar::Util::reftype($val);
+  if (ref $val)
+  {
+    my $blessed = Scalar::Util::blessed($val);
+    $blessed = defined($blessed) ? $blessed : "";
+    my $reftype = Scalar::Util::reftype($val);
 
 
-		if ($Test::Deep::RegexpVersion::OldStyle) {
-			if ($blessed eq "Regexp" and $reftype eq "SCALAR")
-			{
-				$reftype = "Regexp"
-			}
-		}
-		return ($blessed, $reftype);
-	}
-	else
-	{
-		return ("", "");
-	}
+    if ($Test::Deep::RegexpVersion::OldStyle) {
+      if ($blessed eq "Regexp" and $reftype eq "SCALAR")
+      {
+        $reftype = "Regexp"
+      }
+    }
+    return ($blessed, $reftype);
+  }
+  else
+  {
+    return ("", "");
+  }
 }
 
 sub render_stack
 {
-	my ($var, $stack) = @_;
+  my ($var, $stack) = @_;
 
-	return $stack->render($var);
+  return $stack->render($var);
 }
 
 sub cmp_methods
 {
-	local $Test::Builder::Level = $Test::Builder::Level + 1;
-	return cmp_deeply(shift, methods(@{shift()}), shift);
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
+  return cmp_deeply(shift, methods(@{shift()}), shift);
 }
 
 sub requireclass
 {
-	require Test::Deep::Class;
+  require Test::Deep::Class;
 
-	my $val = shift;
+  my $val = shift;
 
-	return Test::Deep::Class->new(1, $val);
+  return Test::Deep::Class->new(1, $val);
 }
 
 # docs and export say this is called useclass, doh!
@@ -506,32 +510,32 @@ sub requireclass
 
 sub noclass
 {
-	require Test::Deep::Class;
+  require Test::Deep::Class;
 
-	my $val = shift;
+  my $val = shift;
 
-	return Test::Deep::Class->new(0, $val);
+  return Test::Deep::Class->new(0, $val);
 }
 
 sub set
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(1, "", @_);
+  return Test::Deep::Set->new(1, "", @_);
 }
 
 sub supersetof
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(1, "sup", @_);
+  return Test::Deep::Set->new(1, "sup", @_);
 }
 
 sub subsetof
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(1, "sub", @_);
+  return Test::Deep::Set->new(1, "sub", @_);
 }
 
 sub noneof
@@ -543,34 +547,34 @@ sub noneof
 
 sub cmp_set
 {
-	local $Test::Builder::Level = $Test::Builder::Level + 1;
-	return cmp_deeply(shift, set(@{shift()}), shift);
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
+  return cmp_deeply(shift, set(@{shift()}), shift);
 }
 
 sub bag
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(0, "", @_);
+  return Test::Deep::Set->new(0, "", @_);
 }
 
 sub superbagof
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(0, "sup", @_);
+  return Test::Deep::Set->new(0, "sup", @_);
 }
 
 sub subbagof
 {
-	require Test::Deep::Set;
+  require Test::Deep::Set;
 
-	return Test::Deep::Set->new(0, "sub", @_);
+  return Test::Deep::Set->new(0, "sub", @_);
 }
 
 sub cmp_bag
 {
-	local $Test::Builder::Level = $Test::Builder::Level + 1;
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
   my $ref = ref($_[1]) || "";
   confess "Argument 2 to cmp_bag is not an ARRAY ref (".render_val($_[1]).")"
     unless $ref eq "ARRAY";
@@ -579,29 +583,29 @@ sub cmp_bag
 
 sub superhashof
 {
-	require Test::Deep::Hash;
+  require Test::Deep::Hash;
 
-	my $val = shift;
+  my $val = shift;
 
-	return Test::Deep::SuperHash->new($val);
+  return Test::Deep::SuperHash->new($val);
 }
 
 sub subhashof
 {
-	require Test::Deep::Hash;
+  require Test::Deep::Hash;
 
-	my $val = shift;
+  my $val = shift;
 
-	return Test::Deep::SubHash->new($val);
+  return Test::Deep::SubHash->new($val);
 }
 
 sub builder
 {
-	if (@_)
-	{
-		$Test = shift;
-	}
-	return $Test;
+  if (@_)
+  {
+    $Test = shift;
+  }
+  return $Test;
 }
 
 1;
@@ -680,11 +684,11 @@ string should be a 7 digit number beginning with 0, C<eq> is no good in this
 situation, you need a regular expression. So you could use Test::More's
 C<like()> function:
 
-  like($string, '/^0d{6}$/', "number looks good");
+  like($string, qr/^0[0-9]{6}$/, "number looks good");
 
 Similarly, to check that a string looks like a name, you could do:
 
-  like($string, '/^(Mr|Mrs|Miss) \w+ \w+$/',
+  like($string, qr/^(Mr|Mrs|Miss) \w+ \w+$/,
     "got title, first and last name");
 
 Now imagine your function produces a hash with some personal details in it.
@@ -693,8 +697,8 @@ name looks like a name and the phone number looks like a phone number. You
 could do:
 
   $hash = make_person();
-  like($hash->{Name}, '/^(Mr|Mrs|Miss) \w+ \w+$/', "name ok");
-  like($hash->{Phone}, '/^0d{6}$/', "phone ok");
+  like($hash->{Name}, qr/^(Mr|Mrs|Miss) \w+ \w+$/, "name ok");
+  like($hash->{Phone}, qr/^0[0-9]{6}$/, "phone ok");
   is(scalar keys %$hash, 2, "correct number of keys");
 
 But that's not quite right, what if make_person has a serious problem and
@@ -702,8 +706,8 @@ didn't even return a hash? We really need to write
 
   if (ref($hash) eq "HASH")
   {
-    like($hash->{Name}, '/^(Mr|Mrs|Miss) \w+ \w+$/', "name ok");
-    like($hash->{Phone}, '/^0d{6}$/', "phone ok");
+    like($hash->{Name}, qr/^(Mr|Mrs|Miss) \w+ \w+$/, "name ok");
+    like($hash->{Phone}, qr/^0[0-9]{6}$/, "phone ok");
     is(scalar keys %$hash, 2, "correct number of keys");
   }
   else
@@ -836,10 +840,11 @@ one easily by doing
   my @a = (1, 2, 3, \@b);
   push(@b, \@a);
 
-now @a contains a reference to be @b and @b contains a reference to @a. This
-causes problems if you have a program that wants to look inside @a and keep
-looking deeper and deeper at every level, it could get caught in an infinite
-loop looking into @a then @b then @a then @b and so on.
+now C<@a> contains a reference to be C<@b> and C<@b> contains a reference to
+C<@a>. This causes problems if you have a program that wants to look inside
+C<@a> and keep looking deeper and deeper at every level, it could get caught
+in an infinite loop looking into C<@a> then C<@b> then C<@a> then C<@b> and
+so on.
 
 Test::Deep avoids this problem so we can extend our example further by
 saying that a person should also list their parents.
@@ -877,34 +882,49 @@ respectively.
 
 =head1 COMPARISON FUNCTIONS
 
-=head3 $ok = cmp_deeply($got, $expected, $name)
+=head3 cmp_deeply
 
-$got is the result to be checked. $expected is the structure against which
-$got will be check. $name is the test name.
+  my $ok = cmp_deeply($got, $expected, $name)
+
+C<$got> is the result to be checked. C<$expected> is the structure against
+which C<$got> will be check. C<$name> is the test name.
 
 This is the main comparison function, the others are just wrappers around
-this. Without any special comparisons, it will descend into $expected,
-following every reference and comparing C<$expected_v> to C<$got_v> (using
-C<eq>) at the same position. If at any stage C<$expected_v> is a special
-comparison then Test::Deep may do something else besides a simple string
-comparison, exactly what it does depends on which special comparison it is.
+this.  C<$got> and C<$expected> are compared recursively.  Each value in
+C<$expected> defines what's expected at the corresponding location in C<$got>.
+Simple scalars are compared with C<eq>.  References to structures like hashes
+and arrays are compared recursively.
 
-=head3 $ok = cmp_bag(\@got, \@bag, $name)
+Items in C<$expected>, though, can also represent complex tests that check for
+numbers in a given range, hashes with at least a certain set of keys, a string
+matching a regex, or many other things.
+
+See L</WHAT ARE SPECIAL COMPARISONS> for details.
+
+=head3 cmp_bag
+
+  my $ok = cmp_bag(\@got, \@bag, $name)
 
 Is shorthand for cmp_deeply(\@got, bag(@bag), $name)
 
-N.B. Both arguments must be array refs. If they aren't an error will
-be raised via die.
+I<n.b.>: Both arguments must be array refs. If they aren't an exception will be
+thrown.
 
-=head3 $ok = cmp_set(\@got, \@set, $name)
+=head3 cmp_set
+
+  my $ok = cmp_set(\@got, \@set, $name)
 
 Is shorthand for cmp_deeply(\@got, set(@set), $name)
 
-=head3 $ok = cmp_methods(\@got, \@methods, $name)
+=head3 cmp_methods
+
+  my $ok = cmp_methods(\@got, \@methods, $name)
 
 Is shorthand for cmp_deeply(\@got, methods(@methods), $name)
 
-=head3 $ok = eq_deeply($got, $expected)
+=head3 eq_deeply
+
+  my $ok = eq_deeply($got, $expected)
 
 This is the same as cmp_deeply() except it just returns true or
 false. It does not create diagnostics or talk to L<Test::Builder>, but
@@ -917,7 +937,9 @@ import it through L<Test::Deep::NoTest>. For example
 otherwise the L<Test::Builder> framework will be loaded and testing messages
 will be output when your program ends.
 
-=head3 ($ok, $stack) = cmp_details($got, $expected)
+=head3 cmp_details
+
+  ($ok, $stack) = cmp_details($got, $expected)
 
 This behaves much like eq_deeply, but it additionally allows you to
 produce diagnostics in case of failure by passing the value in C<$stack>
@@ -930,25 +952,36 @@ See L</USING TEST::DEEP WITH TEST::BUILDER> for example uses.
 
 =head1 SPECIAL COMPARISONS PROVIDED
 
-=head3 ignore()
+In the documentation below, C<$got_v> is used to indicate any given value
+within the C<$got> structure.
 
-This makes Test::Deep skip tests on $got_v. No matter what value C<$got_v>
+=head3 ignore
+
+  cmp_deeply( $got, ignore() );
+
+This makes Test::Deep skip tests on C<$got_v>. No matter what value C<$got_v>
 has, Test::Deep will think it's correct. This is useful if some part of the
 structure you are testing is very complicated and already tested elsewhere,
-or is unpredictable.
+or if it is unpredictable.
 
-  cmp_deeply($got, { name => 'John', random => ignore(), address => ['5 A
-    street', 'a town', 'a country'],
-  })
+  cmp_deeply(
+    $got,
+    {
+      name    => 'John',
+      rando m => ignore(),
+      address => [ '5 A street', 'a town', 'a country' ],
+    }
+  );
 
 is the equivalent of checking
 
   $got->{name} eq 'John';
   exists $got->{random};
-  cmp_deeply($got->{address};
-  ['5 A street', 'a town', 'a country']);
+  cmp_deeply($got->{address}, ['5 A street', 'a town', 'a country']);
 
-=head3 methods(%hash)
+=head3 methods
+
+  cmp_deeply( $got, methods(%hash) );
 
 %hash is a hash of method call => expected value pairs.
 
@@ -969,12 +1002,12 @@ is roughly the equivalent of checking that
 
 The methods will be called in the order you supply them and will be called
 in scalar context. If you need to test methods called in list context then
-you should use listmethods().
+you should use C<listmethods()>.
 
 B<NOTE> Just as in a normal test script, you need to be careful if the
 methods you call have side effects like changing the object or other objects
 in the structure. Although the order of the methods is fixed, the order of
-some other tests is not so if $expected is
+some other tests is not so if C<$expected> is
 
   {
     manager => methods(@manager_methods),
@@ -985,13 +1018,15 @@ there is no way to know which if manager and coder will be tested first. If
 the methods you are testing depend on and alter global variables or if
 manager and coder are the same object then you may run into problems.
 
-=head3 listmethods(%hash)
+=head3 listmethods
 
-%hash is a hash of method call => expected value pairs.
+  cmp_deeply( $got, listmethods(%hash) );
+
+C<%hash> is a hash of pairs mapping method names to expected return values.
 
 This is almost identical to methods() except the methods are called in list
-context instead of scalar context. This means that the expected values
-supplied must be an array reference.
+context instead of scalar context. This means that the expected return
+values supplied must be in array references.
 
   cmp_deeply(
     $obj,
@@ -1010,24 +1045,28 @@ The methods will be called in the order you supply them.
 
 B<NOTE> The same caveats apply as for methods().
 
-=head3 shallow($thing)
+=head3 shallow
+
+  cmp_deeply( $got, shallow($thing) );
 
 $thing is a ref.
 
 This prevents Test::Deep from looking inside $thing. It allows you to
-check that $got_v and $thing are references to the same variable. So
+check that C<$got_v> and C<$thing> are references to the same variable. So
 
   my @a = @b = (1, 2, 3);
   cmp_deeply(\@a, \@b);
 
-will pass because @a and @b have the same elements however
+will pass because C<@a> and C<@b> have the same elements however
 
   cmp_deeply(\@a, shallow(\@b))
 
-will fail because although \@a and \@b both contain C<1, 2, 3> they are
+will fail because although C<\@a> and C<\@b> both contain C<1, 2, 3> they are
 references to different arrays.
 
-=head3 noclass($thing)
+=head3 noclass
+
+  cmp_deeply( $got, noclass($thing) );
 
 $thing is a structure to be compared against.
 
@@ -1038,12 +1077,12 @@ C<$thing> it will go back to it's previous setting for checking class.
 
 This can be useful when you want to check that objects have been
 constructed correctly but you don't want to write lots of
-C<bless>es. If @people is an array of Person objects then
+C<bless>es. If C<@people> is an array of Person objects then
 
-  cmp_deeply(\@people, noclass([
+  cmp_deeply(\@people, [
     bless {name => 'John', phone => '555-5555'}, "Person",
     bless {name => 'Anne', phone => '444-4444'}, "Person",
-  ]));
+  ]);
 
 can be replaced with
 
@@ -1058,9 +1097,11 @@ could do a second test like
 
   cmp_deeply(\@people, array_each(isa("Person"));
 
-=head3 useclass($thing)
+=head3 useclass
 
-This turns back on the class comparison while inside a noclass().
+  cmp_deeply( $got, useclass($thing) );
+
+This turns back on the class comparison while inside a C<noclass()>.
 
   cmp_deeply(
     $got,
@@ -1075,20 +1116,22 @@ In this example the class of the array reference in C<$got> is ignored but
 the class of C<$object> is checked, as is the class of everything inside
 C<$object>.
 
-=head3 re($regexp, $capture_data, $flags)
+=head3 re
 
-$regexp is either a regular expression reference produced with C<qr/.../> or
-a string which will be used to construct a regular expression.
+  cmp_deeply( $got, re($regexp, $capture_data, $flags) );
 
-$capture_data is optional and is used to check the strings captured by
-an regex. This should can be an array ref or a Test::Deep comparator
-that works on array refs.
+C<$regexp> is either a regular expression reference produced with C<qr/.../>
+or a string which will be used to construct a regular expression.
 
-$flags is an optional string which controls whether the regex runs as a
-global match. If $flags is "g" then the regex will run as m/$regexp/g.
+C<$capture_data> is optional and is used to check the strings captured by an
+regex. This should can be an array ref or a Test::Deep comparator that works
+on array refs.
 
-Without $capture_data, this simply compares $got_v with the regular expression
-provided. So
+C<$flags> is an optional string which controls whether the regex runs as a
+global match. If C<$flags> is "g" then the regex will run as C<m/$regexp/g>.
+
+Without C<$capture_data>, this simply compares C<$got_v> with the regular
+expression provided. So
 
   cmp_deeply($got, [ re("ferg") ])
 
@@ -1096,7 +1139,7 @@ is the equivalent of
 
   $got->[0] =~ /ferg/
 
-With $capture_data
+With C<$capture_data>,
 
   cmp_deeply($got, [re($regex, $capture_data)])
 
@@ -1109,128 +1152,27 @@ So you can do something simple like
 
   cmp_deeply($got, re(qr/(\d\d)(\w\w)/, [25, "ab" ]))
 
-to check that (\d\d) was 25 and (\w\w) was "ab" but you can also use
+to check that C<(\d\d)> was 25 and C<(\w\w)> was "ab" but you can also use
 Test::Deep objects to do more complex testing of the captured values
 
-  cmp_deeply("cat=2,dog=67,sheep=3,goat=2,dog=5",
-    re(qr/(\D+)=\d+,?/, set(qw( cat sheep dog )), "g"))
+  cmp_deeply(
+    "cat=2,dog=67,sheep=3,goat=2,dog=5",
+    re(
+      qr/(\D+)=\d+,?/,
+      set(qw( cat sheep dog )),
+      "g"
+    ),
+  );
 
 here, the regex will match the string and will capture the animal names and
 check that they match the specified set, in this case it will fail,
 complaining that "goat" is not in the set.
 
-=head3 superhashof(\%hash)
+=head3 all
 
-This will check that the hash C<%$got> is a "super-hash" of C<%hash>. That
-is that all the key and value pairs in C<%hash> appear in C<%$got> but
-C<%$got> can have extra ones also.
+  cmp_deeply( $got, all(@expecteds) );
 
-For example
-
-  cmp_deeply({a => 1, b => 2}, superhashof({a => 1}))
-
-will pass but
-
-  cmp_deeply({a => 1, b => 2}, superhashof({a => 1, c => 3}))
-
-will fail.
-
-=head3 subhashof(\%hash)
-
-This will check that the hash C<%$got> is a "sub-hash" of C<%hash>. That is
-that all the key and value pairs in C<%$got> also appear in C<%hash>.
-
-For example
-
-  cmp_deeply({a => 1}, subhashof({a => 1, b => 2}))
-
-will pass but
-
-  cmp_deeply({a => 1, c => 3}, subhashof({a => 1, b => 2}))
-
-will fail.
-
-=head3 bag(@elements)
-
-@elements is an array of elements.
-
-This does a bag comparison, that is, it compares two arrays but ignores the
-order of the elements so
-
-  cmp_deeply([1, 2, 2], bag(2, 2, 1))
-
-will be a pass.
-
-The object returned by bag() has an add() method.
-
-  my $bag = bag(1, 2, 3);
-  $bag->add(2, 3, 4);
-
-will result in a bag containing 1, 2, 2, 3, 3, 4.
-
-C<NOTE> If you use certain special comparisons within a bag or set
-comparison there is a danger that a test will fail when it should have
-passed. It can only happen if two or more special comparisons in the bag are
-competing to match elements. Consider this comparison
-
-  cmp_deeply(['furry', 'furball'], bag(re("^fur"), re("furb")))
-
-There are two things that could happen, hopefully C<re("^fur")> is paired with
-"furry" and C<re("^furb")> is paired with "furb" and everything is fine but it
-could happen that C<re("^fur")> is paired with "furball" and then C<re("^furb")>
-cannot find a match and so the test fails. Examples of other competing
-comparisons are C<bag(1, 2, 2)> vs C<set(1, 2)> and
-C<< methods(m1 => "v1", m2 => "v2") >> vs C<< methods(m1 => "v1") >>
-
-This problem is could be solved by using a slower and more complicated
-algorithm for set and bag matching. Something for the future...
-
-=head3 set(@elements)
-
-@elements is an array of elements.
-
-This does a set comparison, that is, it compares two arrays but ignores the
-order of the elements and it ignores duplicate elements, so
-
-  cmp_deeply([1, 2, 2, 3], set(3, 2, 1, 1))
-
-will be a pass.
-
-The object returned by set() has an add() method.
-
-  my $set = set(1, 2);
-  $set->add(1, 3, 1);
-
-will result in a set containing 1, 2, 3.
-
-C<NOTE> See the NOTE on the bag() comparison for some dangers in using
-special comparisons inside set()
-
-=head3 superbagof(@elements), subbagof(@elements), supersetof(@elements), subsetof(@elements) and noneof(@elements)
-
-@elements is an array of elements.
-
-These do exactly what you'd expect them to do, so for example
-
-  cmp_deeply($data, subbagof(1, 1, 3, 4));
-
-checks that @$data contains at most 2 "1"s, 1 "3" and 1 "4" and
-
-  cmp_deeply($data, supersetof(1, 1, 1, 4));
-
-will check that @$data has at least one "1" and at least one "4".
-
-  cmp_deeply($data, noneof(1, 2, 3));
-
-will check that @$data does not contain any instances of "1", "2" or "3".
-
-These are just special cases of the Set and Bag comparisons so they also
-give you an add() method and they also have the same limitations when using
-special comparisons inside them (see the NOTE in the bag() section).
-
-=head3 all(@expecteds)
-
-@expecteds is an array of expected structures.
+C<@expecteds> is an array of expected structures.
 
 This allows you to compare data against multiple expected results and make
 sure each of them matches.
@@ -1255,8 +1197,8 @@ as
 
    re("^wi") | isa("Person") & methods(name => 'John')
 
-Note B<single> | not double, as || cannot be overloaded. This will only work
-when there is a special comparison involved. If you write
+Note B<single> C<|> not double, as C<||> cannot be overloaded. This will
+only work when there is a special comparison involved. If you write
 
   "john" | "anne" | "robert"
 
@@ -1264,43 +1206,55 @@ Perl will turn this into
 
   "{onort"
 
-which is presumably not what you wanted. This is because Perl |s them
+which is presumably not what you wanted. This is because perl ors them
 together as strings before Test::Deep gets a chance to do any overload
 tricks.
 
-=head3 any(@expecteds)
+=head3 any
 
-@expecteds is an array of expected structures.
+  cmp_deeply( $got, any(@expecteds) );
+
+C<@expecteds> is an array of expected structures.
 
 This can be used to compare data against multiple expected results and make
 sure that at least one of them matches. This is a short-circuit test so if
 a test passes then none of the tests after that will be attempted.
 
-You can also use overloading with | similarly to all().
+You can also use overloading with C<|> similarly to all().
 
-=head3 isa($class), Isa($class)
+=head3 Isa
 
-$class is a class name.
+  cmp_deeply( $got, Isa($class) );
 
-This uses UNIVERSAL::isa() to check that $got_v is blessed into the class
-$class.
+=head3 isa
 
-B<NOTE:> Isa() does exactly as documented here, but isa() is slightly
-different. If isa() is called with 1 argument it falls through to
-Isa(). If isa() called with 2 arguments, it falls through to
-UNIVERSAL::isa. This is to prevent breakage when you import isa() into
+  cmp_deeply( $got, isa($class) );
+
+C<$class> is a class name.
+
+This uses C<UNIVERSAL::isa()> to check that C<$got_v> is blessed into the
+class C<$class>.
+
+B<NOTE:> C<Isa()> does exactly as documented here, but C<isa()> is slightly
+different. If C<isa()> is called with 1 argument it falls through to
+C<Isa()>. If C<isa()> called with 2 arguments, it falls through to
+C<UNIVERSAL::isa>. This is to prevent breakage when you import C<isa()> into
 a package that is used as a class. Without this, anyone calling
-C<Class-E<gt>isa($other_class)> would get the wrong answer. This is a
-hack to patch over the fact that isa is exported by default.
+C<Class-E<gt>isa($other_class)> would get the wrong answer. This is a hack
+to patch over the fact that C<isa> is exported by default.
 
-=head3 obj_isa($class)
+=head3 obj_isa
+
+  cmp_deeply( $got, obj_isa($class) );
 
 This test accepts only objects that are instances of C<$class> or a subclass.
 Unlike the C<Isa> test, this test will never accept class names.
 
-=head3 array_each($thing)
+=head3 array_each
 
-$thing is a structure to be compared against.
+  cmp_deeply( \@got, array_each($thing) );
+
+C<$thing> is a structure to be compared against.
 
 <$got_v> must be an array reference. Each element of it will be compared to
 $thing. This is useful when you have an array of similar things, for example
@@ -1323,9 +1277,9 @@ is similar to
     cmp_deeply($got_v, $common_tests)
   }
 
-Except it will not explode if $got is not an array reference. It will check
-that each of the objects in @$got is a MyFile and that each one gives the
-correct results for it's methods.
+Except it will not explode if C<$got> is not an array reference. It will
+check that each of the objects in C<@$got> is a MyFile and that each one
+gives the correct results for it's methods.
 
 You could go further, if for example there were 3 files and you knew the
 size of each one you could do this
@@ -1343,50 +1297,62 @@ size of each one you could do this
   )
   cmp_deeply($got, array_each($structure));
 
-=head3 hash_each($thing)
+=head3 hash_each
 
-This test behaves like C<array_each> (see above) but tests that each hash value
-passes its tests.
+  cmp_deeply( \%got, hash_each($thing) );
 
-=head3 str($string)
+This test behaves like C<array_each> (see above) but tests that each hash
+value passes its tests.
+
+=head3 str
+
+  cmp_deeply( $got, str($string) );
 
 $string is a string.
 
 This will stringify C<$got_v> and compare it to C<$string> using C<eq>, even
-if $got_v is a ref. It is useful for checking the stringified value of an
+if C<$got_v> is a ref. It is useful for checking the stringified value of an
 overloaded reference.
 
-=head3 num($number, $tolerance)
+=head3 num
 
-$number is a number.
-$tolerance is an optional number.
+  cmp_deeply( $got, num($number, $tolerance) );
+
+C<$number> is a number.
+
+C<$tolerance> is an optional number.
 
 This will add 0 to C<$got_v> and check if it's numerically equal to
-C<$number>, even if $got_v is a ref. It is useful for checking the numerical
-value of an overloaded reference. If $tolerance is supplied then this will
-check that $got_v and $exp_v are less than $tolerance apart. This is useful
-when comparing floating point numbers as rounding errors can make it hard or
-impossible for $got_v to be exactly equal to $exp_v. When $tolerance is
-supplied, the test passes if C<abs($got_v - $exp_v) <= $tolerance>.
+C<$number>, even if C<$got_v> is a ref. It is useful for checking the
+numerical value of an overloaded reference. If C<$tolerance> is supplied
+then this will check that C<$got_v> and C<$exp_v> are less than
+C<$tolerance> apart. This is useful when comparing floating point numbers as
+rounding errors can make it hard or impossible for C<$got_v> to be exactly
+equal to C<$exp_v>. When C<$tolerance> is supplied, the test passes if
+C<abs($got_v - $exp_v) <= $tolerance>.
 
 B<Note> in Perl, C<"12blah" == 12> because Perl will be smart and convert
 "12blah" into 12. You may not want this. There was a strict mode but that is
-now gone. A "lookslike s number" test will replace it soon. Until then you
+now gone. A "looks like a number" test will replace it soon. Until then you
 can usually just use the string() comparison to be more strict. This will
 work fine for almost all situations, however it will not work when <$got_v>
 is an overloaded value who's string and numerical values differ.
 
-=head3 bool($value)
+=head3 bool
 
-$value is anything you like but it's probably best to use 0 or 1
+  cmp_deeply( $got, bool($value) );
+
+C<$value> is anything you like but it's probably best to use 0 or 1
 
 This will check that C<$got_v> and C<$value> have the same truth value, that
 is they will give the same result when used in boolean context, like in an
-if() statement.
+C<if()> statement.
 
-=head3 code(\&subref)
+=head3 code
 
-\&subref is a reference to a subroutine which will be passed a single
+  cmp_deeply( $got, code(\&subref) );
+
+C<\&subref> is a reference to a subroutine which will be passed a single
 argument, it then should return a true or false and possibly a string
 
 This will pass C<$got_v> to the subroutine which returns true or false to
@@ -1408,14 +1374,253 @@ which gives an explanation of why it's a fail.
 
   cmp_deeply("Brian", code(\&check_name));
 
+=head2 SET COMPARISONS
+
+Set comparisons give special semantics to array comparisons:
+
+=over 4
+
+=item * The order of items in a set is irrelevant
+
+=item * The presence of duplicate items in a set is ignored.
+
+=back
+
+As such, in any set comparison, the following arrays are equal:
+
+  [ 1, 2 ]
+  [ 1, 1, 2 ]
+  [ 1, 2, 1 ]
+  [ 2, 1, 1 ]
+  [ 1, 1, 2 ]
+
+All are interpreted by C<set> semantics as if the set was only specified as:
+
+  [ 1, 2 ]
+
+All C<set> functions return an object which can have additional items added to
+it:
+
+  my $set = set( 1, 2 );
+  $set->add(1, 3, 1 );  # Set is now ( 1, 2, 3 )
+
+Special care must be taken when using special comparisons within sets. See
+L</SPECIAL CARE WITH SPECIAL COMPARISONS IN SETS AND BAGS> for details.
+
+=head3 set
+
+  cmp_deeply( \@got, set(@elements) );
+
+This does a set comparison, that is, it compares two arrays but ignores the
+order of the elements and it ignores duplicate elements, but ensures that all
+items in in C<@elements> will be in C<$got> and all items in C<$got> will be
+in C<@elements>.
+
+So the following tests will be passes, and will be equivalent:
+
+  cmp_deeply([1, 2, 2, 3], set(3, 2, 1, 1));
+  cmp_deeply([1, 2, 3],    set(3, 2, 1));
+
+=head3 supersetof
+
+  cmp_deeply( \@got, supersetof(@elements) );
+
+This function works much like L<< C<set>|/set >>, and performs a set comparison
+of C<$got_v> with the elements of C<@elements>.
+
+C<supersetof> is however slightly relaxed, such that C<$got> may contain things
+not in C<@elements>, but must at least contain all C<@elements>.
+
+These two statements are equivalent, and will be passes:
+
+  cmp_deeply([1,2,3,3,4,5], supersetof(2,2,3));
+  cmp_deeply([1,2,3,4,5],   supersetof(2,3));
+
+But these will be failures:
+
+  cmp_deeply([1,2,3,4,5],   supersetof(2,3,6)); # 6 not in superset
+  cmp_deeply([1],           supersetof(1,2));   # 2 not in superset
+
+=head3 subsetof
+
+  cmp_deeply( \@got, subsetof(@elements) );
+
+This function works much like L<< C<set>|/set >>, and performs a set comparison
+of C<$got_v> with the elements of C<@elements>.
+
+This is the inverse of C<supersetof>, which expects all unique elements found
+in C<$got_v> must be in C<@elements>.
+
+  cmp_deeply([1,2,4,5], subsetof(2,3,3)    ) # Fail: 1,4 & 5 extra
+  cmp_deeply([2,3,3],   subsetof(1,2,4,5)  ) # Fail: 3 extra
+  cmp_deeply([2,3,3],   subsetof(1,2,4,5,3)) # Pass
+
+=head3 noneof
+
+  cmp_deeply( \@got, noneof(@elements) );
+
+@elements is an array of elements, wherein no elements in C<@elements> may be
+found in C<$got_v>.
+
+For example:
+
+  # Got has no 1, no 2, and no 3
+  cmp_deeply( [1], noneof( 1, 2, 3 ) ); # fail
+  cmp_deeply( [5], noneof( 1, 2, 3 ) ); # pass
+
+=head2 BAG COMPARISONS
+
+Bag comparisons give special semantics to array comparisons, that are similar
+to L<< set comparisons|/SET COMPARISONS >>, but slightly different.
+
+=over 4
+
+=item * The order of items in a bag is irrelevant
+
+=item * The presence of duplicate items in a bag is B<PRESERVED>
+
+=back
+
+As such, in any bag comparison, the following arrays are equal:
+
+  [ 1, 1, 2 ]
+  [ 1, 2, 1 ]
+  [ 2, 1, 1 ]
+  [ 1, 1, 2 ]
+
+However, they are B<NOT> equal to any of the following:
+
+  [ 1, 2 ]
+  [ 1, 2, 2 ]
+  [ 1, 1, 1, 2 ]
+
+All C<bag> functions return an object which can have additional items added to
+it:
+
+  my $bag = bag( 1, 2 );
+  $bag->add(1, 3, 1 );  # Bag is now ( 1, 1, 1, 2, 3 )
+
+Special care must be taken when using special comparisons within bags. See
+L</SPECIAL CARE WITH SPECIAL COMPARISONS IN SETS AND BAGS> for details.
+
+=head3 bag
+
+  cmp_deeply( \@got, bag(@elements) );
+
+This does an order-insensitive bag comparison between C<$got> and
+C<@elements>, ensuring that:
+
+=over 4
+
+=item each item in C<@elements> is found in C<$got>
+
+=item the number of times a C<$expected_v> is found in C<@elements> is
+reflected in C<$got>
+
+=item no items are found in C<$got> other than those in C<@elements>.
+
+=back
+
+As such, the following are passes, and are equivalent to each other:
+
+  cmp_deeply([1, 2, 2], bag(2, 2, 1))
+  cmp_deeply([2, 1, 2], bag(2, 2, 1))
+  cmp_deeply([2, 2, 1], bag(2, 2, 1))
+
+But the following are failures:
+
+  cmp_deeply([1, 2, 2],     bag(2, 2, 1, 1)) # Not enough 1's in Got
+  cmp_deeply([1, 2, 2, 1],  bag(2, 2, 1)   ) # Too many   1's in Got
+
+=head3 superbagof
+
+  cmp_deeply( \@got, superbagof( @elements ) );
+
+This function works much like L<< C<bag>|/bag >>, and performs a bag comparison
+of C<$got_v> with the elements of C<@elements>.
+
+C<superbagof> is however slightly relaxed, such that C<$got> may contain things
+not in C<@elements>, but must at least contain all C<@elements>.
+
+So:
+
+  # pass
+  cmp_deeply( [1, 1, 2], superbagof( 1 )      );
+
+  # fail: not enough 1's in superbag
+  cmp_deeply( [1, 1, 2], superbagof( 1, 1, 1 ));
+
+=head3 subbagof
+
+  cmp_deeply( \@got, subbagof(@elements) );
+
+This function works much like L<< C<bag>|/bag >>, and performs a bag comparison
+of C<$got_v> with the elements of C<@elements>.
+
+This is the inverse of C<superbagof>, and expects all elements in C<$got> to
+be in C<@elements>, while allowing items to exist in C<@elements> that are not
+in C<$got>
+
+  # pass
+  cmp_deeply( [1],        subbagof( 1, 1, 2 ) );
+
+  # fail: too many 1's in subbag
+  cmp_deeply( [1, 1, 1],  subbagof( 1, 1, 2 ) );
+
+=head2 HASH COMPARISONS
+
+Typically, if you're doing simple hash comparisons,
+
+  cmp_deeply( \%got, \%expected )
+
+is sufficient. C<cmp_deeply> will ensure C<%got> and C<%hash> have identical
+keys, and each key from either has the same corresponding value.
+
+=head3 superhashof
+
+  cmp_deeply( \%got, superhashof(\%hash) );
+
+This will check that the hash C<%$got> is a "super-hash" of C<%hash>. That
+is that all the key and value pairs in C<%hash> appear in C<%$got> but
+C<%$got> can have extra ones also.
+
+For example
+
+  cmp_deeply({a => 1, b => 2}, superhashof({a => 1}))
+
+will pass but
+
+  cmp_deeply({a => 1, b => 2}, superhashof({a => 1, c => 3}))
+
+will fail.
+
+=head3 subhashof
+
+  cmp_deeply( \%got, subhashof(\%hash) );
+
+This will check that the hash C<%$got> is a "sub-hash" of C<%hash>. That is
+that all the key and value pairs in C<%$got> also appear in C<%hash>.
+
+For example
+
+  cmp_deeply({a => 1}, subhashof({a => 1, b => 2}))
+
+will pass but
+
+  cmp_deeply({a => 1, c => 3}, subhashof({a => 1, b => 2}))
+
+will fail.
+
 =head1 DIAGNOSTIC FUNCTIONS
 
-=head3 my $reason = deep_diag($stack)
+=head3 deep_diag
+
+  my $reason = deep_diag($stack);
 
 C<$stack> is a value returned by cmp_details.  Do not call this function
 if cmp_details returned a true value for C<$ok>.
 
-deep_diag() returns a human readable string describing how the
+C<deep_diag()> returns a human readable string describing how the
 comparison failed.
 
 =head1 ANOTHER EXAMPLE
@@ -1512,7 +1717,28 @@ means only their memory addresses are compared.
 There is a bug in set and bag compare to do with competing SCs. It only
 occurs when you put certain special comparisons inside bag or set
 comparisons you don't need to worry about it. The full details are in the
-bag() docs. It will be fixed in an upcoming version.
+C<bag()> docs. It will be fixed in an upcoming version.
+
+=head1 CAVEATS
+
+=head2 SPECIAL CARE WITH SPECIAL COMPARISONS IN SETS AND BAGS
+
+If you use certain special comparisons within a bag or set comparison there is
+a danger that a test will fail when it should have passed. It can only happen
+if two or more special comparisons in the bag are competing to match elements.
+Consider this comparison
+
+  cmp_deeply(['furry', 'furball'], bag(re("^fur"), re("furb")))
+
+There are two things that could happen, hopefully C<re("^fur")> is paired with
+"furry" and C<re("^furb")> is paired with "furb" and everything is fine but it
+could happen that C<re("^fur")> is paired with "furball" and then C<re("^furb")>
+cannot find a match and so the test fails. Examples of other competing
+comparisons are C<bag(1, 2, 2)> vs C<set(1, 2)> and
+C<< methods(m1 => "v1", m2 => "v2") >> vs C<< methods(m1 => "v1") >>
+
+This problem is could be solved by using a slower and more complicated
+algorithm for set and bag matching. Something for the future...
 
 =head1 WHAT ARE SPECIAL COMPARISONS?
 

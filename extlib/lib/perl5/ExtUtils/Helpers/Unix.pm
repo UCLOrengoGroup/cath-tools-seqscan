@@ -1,14 +1,13 @@
 package ExtUtils::Helpers::Unix;
-$ExtUtils::Helpers::Unix::VERSION = '0.022';
+$ExtUtils::Helpers::Unix::VERSION = '0.026';
 use strict;
 use warnings FATAL => 'all';
 
 use Exporter 5.57 'import';
-our @EXPORT = qw/make_executable split_like_shell detildefy/;
+our @EXPORT = qw/make_executable detildefy/;
 
 use Carp qw/croak/;
 use Config;
-use Text::ParseWords 3.24 qw/shellwords/;
 
 my $layer = $] >= 5.008001 ? ":raw" : "";
 
@@ -29,16 +28,6 @@ sub make_executable {
 	}
 	chmod $current_mode | oct(111), $filename;
 	return;
-}
-
-sub split_like_shell {
-	my ($string) = @_;
-
-	return if not defined $string;
-	$string =~ s/^\s+|\s+$//g;
-	return if not length $string;
-
-	return shellwords($string);
 }
 
 sub detildefy {
@@ -67,7 +56,7 @@ ExtUtils::Helpers::Unix - Unix specific helper bits
 
 =head1 VERSION
 
-version 0.022
+version 0.026
 
 =for Pod::Coverage make_executable
 split_like_shell

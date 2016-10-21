@@ -4,7 +4,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(Exporter);
 
-our $VERSION = '1.003005';
+our $VERSION = '1.003007';
 $VERSION = eval $VERSION;
 
 sub _choose_json_module {
@@ -154,7 +154,7 @@ This imports the C<to_json> and C<from_json> symbols as well as everything in
 C<:all>.  NOTE: This is to support legacy code that makes extensive
 use of C<to_json> and C<from_json> which you are not yet in a position to
 refactor.  DO NOT use this import tag in new code, in order to avoid
-the crawling horrors of getting UTF8 support subtly wrong.  See the
+the crawling horrors of getting UTF-8 support subtly wrong.  See the
 documentation for L<JSON> for further details.
 
 =head2 encode_json
@@ -215,6 +215,9 @@ Since this is a trifle irritating and noticeably un-perlish, we also offer:
 which works equivalently to the above (and in the usual tradition will accept
 a hashref instead of a hash, should you so desire).
 
+The resulting object is blessed into the underlying backend, which offers (at
+least) the methods C<encode> and C<decode>.
+
 =head1 BOOLEANS
 
 To include JSON-aware booleans (C<true>, C<false>) in your data, just do:
@@ -222,6 +225,33 @@ To include JSON-aware booleans (C<true>, C<false>) in your data, just do:
     use JSON::MaybeXS;
     my $true = JSON->true;
     my $false = JSON->false;
+
+=head1 CONVERTING FROM JSON::Any
+
+L<JSON::Any> used to be the favoured compatibility layer above the various
+JSON backends, but over time has grown a lot of extra code to deal with legacy
+backends (e.g. L<JSON::Syck>) that are no longer needed.  This is a rough guide of translating such code:
+
+Change code from:
+
+    use JSON::Any;
+    my $json = JSON::Any->new->objToJson($data);    # or to_json($data), or Dump($data)
+
+to:
+
+    use JSON::MaybeXS;
+    my $json = encode_json($data);
+
+
+Change code from:
+
+    use JSON::Any;
+    my $data = JSON::Any->new->jsonToObj($json);    # or from_json($json), or Load($json)
+
+to:
+
+    use JSON::MaybeXS;
+    my $json = decode_json($data);
 
 =head1 CAVEATS
 

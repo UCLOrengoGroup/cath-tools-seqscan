@@ -1,0 +1,14 @@
+/META.yml
+/MYMETA.*
+/Makefile
+/Makefile.old
+/MANIFEST
+/MANIFEST.bak
+/blib/
+/pm_to_blib
+/.build
+.*
+!/.gitignore
+!/.travis.yml
+/*.task_id.json
+/*.fasta

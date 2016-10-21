@@ -3,7 +3,7 @@ package Params::Validate::XS;
 use strict;
 use warnings;
 
-our $VERSION = '1.24';
+our $VERSION = '1.25';
 
 use Carp;
 
@@ -38,9 +38,7 @@ my $default_fail = sub {
     use XSLoader;
     XSLoader::load(
         __PACKAGE__,
-        exists $Params::Validate::XS::{VERSION}
-        ? ${ $Params::Validate::XS::{VERSION} }
-        : (),
+        $VERSION,
     );
 }
 

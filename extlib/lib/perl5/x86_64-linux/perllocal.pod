@@ -1,642 +1,4 @@
-=head2 Thu Sep  1 17:54:58 2016: C<Module> L<URI|URI>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.71>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:06 2016: C<Module> L<MIME::Charset|MIME::Charset>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.012>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:14 2016: C<Module> L<Unicode::LineBreak|Unicode::LineBreak>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2016.003>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:38 2016: C<Module> L<libintl-perl|libintl-perl>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.26>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:42 2016: C<Module> L<ExtUtils::Config|ExtUtils::Config>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.008>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:42 2016: C<Module> L<ExtUtils::InstallPaths|ExtUtils::InstallPaths>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.011>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:44 2016: C<Module> L<ExtUtils::Helpers|ExtUtils::Helpers>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.022>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:48 2016: C<Module> L<Class::Inspector|Class::Inspector>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.28>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:49 2016: C<Module> L<File::ShareDir|File::ShareDir>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.102>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:55:54 2016: C<Module> L<Dist::CheckConflicts|Dist::CheckConflicts>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.11>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:00 2016: C<Module> L<Try::Tiny|Try::Tiny>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.27>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:01 2016: C<Module> L<Test::Fatal|Test::Fatal>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.014>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:03 2016: C<Module> L<Test::Requires|Test::Requires>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.10>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:05 2016: C<Module> L<Module::Implementation|Module::Implementation>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.09>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:08 2016: C<Module> L<Package::Stash::XS|Package::Stash::XS>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.28>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:11 2016: C<Module> L<Package::Stash|Package::Stash>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.37>
-
-=item *
-
-C<EXE_FILES: bin/package-stash-conflicts>
-
-=back
-
-=head2 Thu Sep  1 17:56:14 2016: C<Module> L<Sub::Exporter::Progressive|Sub::Exporter::Progressive>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.001012>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:18 2016: C<Module> L<Variable::Magic|Variable::Magic>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.59>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:20 2016: C<Module> L<B::Hooks::EndOfScope|B::Hooks::EndOfScope>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.21>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:23 2016: C<Module> L<namespace::clean|namespace::clean>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.27>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:25 2016: C<Module> L<Devel::Hide|Devel::Hide>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.0009>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:27 2016: C<Module> L<Term::Size::Perl|Term::Size::Perl>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.029>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:28 2016: C<Module> L<Term::Size::Any|Term::Size::Any>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.002>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:31 2016: C<Module> L<Sub::Uplevel|Sub::Uplevel>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.2600>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:32 2016: C<Module> L<Test::Exception|Test::Exception>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.43>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:36 2016: C<Module> L<Test::Without::Module|Test::Without::Module>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:37 2016: C<Module> L<JSON::MaybeXS|JSON::MaybeXS>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.003005>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:40 2016: C<Module> L<File::ConfigDir|File::ConfigDir>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.017>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:45 2016: C<Module> L<Class::Method::Modifiers|Class::Method::Modifiers>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.12>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:47 2016: C<Module> L<Role::Tiny|Role::Tiny>
+=head2 Mon Sep 26 15:29:05 2016: C<Module> L<Role::Tiny|Role::Tiny>
 
 =over 4
 
@@ -658,271 +20,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:56:48 2016: C<Module> L<Devel::GlobalDestruction|Devel::GlobalDestruction>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.13>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:56 2016: C<Module> L<Moo|Moo>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.002004>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:56:57 2016: C<Module> L<MooX::File::ConfigDir|MooX::File::ConfigDir>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.005>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:04 2016: C<Module> L<JSON|JSON>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.90>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:07 2016: C<Module> L<Clone|Clone>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.38>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:08 2016: C<Module> L<Hash::Merge|Hash::Merge>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.200>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:14 2016: C<Module> L<Module::Pluggable|Module::Pluggable>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.2>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:17 2016: C<Module> L<Config::Any|Config::Any>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.27>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:21 2016: C<Module> L<Number::Compare|Number::Compare>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.03>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:22 2016: C<Module> L<File::Find::Rule|File::Find::Rule>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.34>
-
-=item *
-
-C<EXE_FILES: findrule>
-
-=back
-
-=head2 Thu Sep  1 17:57:25 2016: C<Module> L<MooX::ConfigFromFile|MooX::ConfigFromFile>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.007>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:49 2016: C<Module> L<Regexp::Common|Regexp::Common>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2016060801>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:57:52 2016: C<Module> L<Data::Dump|Data::Dump>
+=head2 Mon Sep 26 15:29:08 2016: C<Module> L<Data::Dump|Data::Dump>
 
 =over 4
 
@@ -944,7 +42,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:28 2016: C<Module> L<Capture::Tiny|Capture::Tiny>
+=head2 Mon Sep 26 15:29:15 2016: C<Module> L<MIME::Charset|MIME::Charset>
 
 =over 4
 
@@ -958,7 +56,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.44>
+C<VERSION: 1.012>
 
 =item *
 
@@ -966,7 +64,51 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:30 2016: C<Module> L<Import::Into|Import::Into>
+=head2 Mon Sep 26 15:29:24 2016: C<Module> L<Unicode::LineBreak|Unicode::LineBreak>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2016.003>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:29:45 2016: C<Module> L<Regexp::Common|Regexp::Common>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2016060801>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:29:49 2016: C<Module> L<Import::Into|Import::Into>
 
 =over 4
 
@@ -988,7 +130,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:37 2016: C<Module> L<Test::Deep|Test::Deep>
+=head2 Mon Sep 26 15:29:52 2016: C<Module> L<Dist::CheckConflicts|Dist::CheckConflicts>
 
 =over 4
 
@@ -1002,7 +144,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 1.120>
+C<VERSION: 0.11>
 
 =item *
 
@@ -1010,7 +152,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:38 2016: C<Module> L<CPAN::Meta::Check|CPAN::Meta::Check>
+=head2 Mon Sep 26 15:29:55 2016: C<Module> L<Test::Requires|Test::Requires>
 
 =over 4
 
@@ -1024,7 +166,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.013>
+C<VERSION: 0.10>
 
 =item *
 
@@ -1032,7 +174,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:42 2016: C<Module> L<Sub::Install|Sub::Install>
+=head2 Mon Sep 26 15:29:59 2016: C<Module> L<Try::Tiny|Try::Tiny>
 
 =over 4
 
@@ -1046,7 +188,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.928>
+C<VERSION: 0.27>
 
 =item *
 
@@ -1054,7 +196,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:45 2016: C<Module> L<Params::Util|Params::Util>
+=head2 Mon Sep 26 15:30:00 2016: C<Module> L<Test::Fatal|Test::Fatal>
 
 =over 4
 
@@ -1068,7 +210,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 1.07>
+C<VERSION: 0.014>
 
 =item *
 
@@ -1076,7 +218,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:46 2016: C<Module> L<Data::OptList|Data::OptList>
+=head2 Mon Sep 26 15:30:02 2016: C<Module> L<Package::Stash::XS|Package::Stash::XS>
 
 =over 4
 
@@ -1090,7 +232,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.110>
+C<VERSION: 0.28>
 
 =item *
 
@@ -1098,7 +240,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:48 2016: C<Module> L<Sub::Exporter|Sub::Exporter>
+=head2 Mon Sep 26 15:30:05 2016: C<Module> L<Module::Implementation|Module::Implementation>
 
 =over 4
 
@@ -1112,7 +254,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.987>
+C<VERSION: 0.09>
 
 =item *
 
@@ -1120,7 +262,623 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:58:51 2016: C<Module> L<Test::Warnings|Test::Warnings>
+=head2 Mon Sep 26 15:30:08 2016: C<Module> L<Package::Stash|Package::Stash>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.37>
+
+=item *
+
+C<EXE_FILES: bin/package-stash-conflicts>
+
+=back
+
+=head2 Mon Sep 26 15:30:10 2016: C<Module> L<Sub::Exporter::Progressive|Sub::Exporter::Progressive>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.001012>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:14 2016: C<Module> L<Variable::Magic|Variable::Magic>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.60>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:16 2016: C<Module> L<B::Hooks::EndOfScope|B::Hooks::EndOfScope>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.21>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:19 2016: C<Module> L<namespace::clean|namespace::clean>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.27>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:22 2016: C<Module> L<Sub::Uplevel|Sub::Uplevel>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.2600>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:23 2016: C<Module> L<Test::Exception|Test::Exception>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.43>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:30:55 2016: C<Module> L<Capture::Tiny|Capture::Tiny>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.44>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:14 2016: C<Module> L<libintl-perl|libintl-perl>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.26>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:16 2016: C<Module> L<Term::Size::Perl|Term::Size::Perl>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.029>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:18 2016: C<Module> L<Devel::Hide|Devel::Hide>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.0009>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:19 2016: C<Module> L<Term::Size::Any|Term::Size::Any>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.002>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:23 2016: C<Module> L<Class::Method::Modifiers|Class::Method::Modifiers>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.12>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:25 2016: C<Module> L<Devel::GlobalDestruction|Devel::GlobalDestruction>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.13>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:33 2016: C<Module> L<Moo|Moo>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.002004>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:35 2016: C<Module> L<JSON::MaybeXS|JSON::MaybeXS>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.003007>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:42 2016: C<Module> L<JSON|JSON>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.90>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:49 2016: C<Module> L<Module::Pluggable|Module::Pluggable>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 5.2>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:51 2016: C<Module> L<Config::Any|Config::Any>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.27>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:53 2016: C<Module> L<Clone|Clone>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.38>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:54 2016: C<Module> L<Hash::Merge|Hash::Merge>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.200>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:56 2016: C<Module> L<Text::Glob|Text::Glob>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.10>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:57 2016: C<Module> L<Number::Compare|Number::Compare>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.03>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:31:58 2016: C<Module> L<File::Find::Rule|File::Find::Rule>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.34>
+
+=item *
+
+C<EXE_FILES: findrule>
+
+=back
+
+=head2 Mon Sep 26 15:32:01 2016: C<Module> L<File::ConfigDir|File::ConfigDir>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.017>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:03 2016: C<Module> L<MooX::File::ConfigDir|MooX::File::ConfigDir>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.005>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:06 2016: C<Module> L<MooX::ConfigFromFile|MooX::ConfigFromFile>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.007>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:08 2016: C<Module> L<ExtUtils::Config|ExtUtils::Config>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.008>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:09 2016: C<Module> L<ExtUtils::Helpers|ExtUtils::Helpers>
 
 =over 4
 
@@ -1142,7 +900,249 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:59:00 2016: C<Module> L<Getopt::Long::Descriptive|Getopt::Long::Descriptive>
+=head2 Mon Sep 26 15:32:10 2016: C<Module> L<ExtUtils::InstallPaths|ExtUtils::InstallPaths>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.011>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:14 2016: C<Module> L<Class::Inspector|Class::Inspector>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.28>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:15 2016: C<Module> L<File::ShareDir|File::ShareDir>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.102>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:21 2016: C<Module> L<Params::Validate|Params::Validate>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.25>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:25 2016: C<Module> L<Params::Util|Params::Util>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.07>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:27 2016: C<Module> L<Sub::Install|Sub::Install>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.928>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:29 2016: C<Module> L<Data::OptList|Data::OptList>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.110>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:31 2016: C<Module> L<Sub::Exporter|Sub::Exporter>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.987>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:34 2016: C<Module> L<Test::Warnings|Test::Warnings>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.026>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:40 2016: C<Module> L<Test::Deep|Test::Deep>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.123>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:41 2016: C<Module> L<CPAN::Meta::Check|CPAN::Meta::Check>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.013>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:32:43 2016: C<Module> L<Getopt::Long::Descriptive|Getopt::Long::Descriptive>
 
 =over 4
 
@@ -1164,7 +1164,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:59:13 2016: C<Module> L<LWP::MediaTypes|LWP::MediaTypes>
+=head2 Mon Sep 26 15:32:57 2016: C<Module> L<Test::Without::Module|Test::Without::Module>
 
 =over 4
 
@@ -1178,7 +1178,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 6.02>
+C<VERSION: 0.18>
 
 =item *
 
@@ -1186,7 +1186,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:59:15 2016: C<Module> L<HTTP::Date|HTTP::Date>
+=head2 Mon Sep 26 15:32:59 2016: C<Module> L<JSON::Any|JSON::Any>
 
 =over 4
 
@@ -1200,7 +1200,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 6.02>
+C<VERSION: 1.39>
 
 =item *
 
@@ -1208,381 +1208,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 17:59:16 2016: C<Module> L<IO::HTML|IO::HTML>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.001>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:18 2016: C<Module> L<Encode::Locale|Encode::Locale>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.05>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:20 2016: C<Module> L<HTTP::Message|HTTP::Message>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.11>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:26 2016: C<Module> L<HTTP::Daemon|HTTP::Daemon>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.01>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:28 2016: C<Module> L<HTML::Tagset|HTML::Tagset>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 3.20>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:33 2016: C<Module> L<HTML::Parser|HTML::Parser>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 3.72>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:39 2016: C<Module> L<WWW::RobotRules|WWW::RobotRules>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.02>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:41 2016: C<Module> L<HTTP::Negotiate|HTTP::Negotiate>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.01>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:45 2016: C<Module> L<File::Listing|File::Listing>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.04>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:46 2016: C<Module> L<Net::HTTP|Net::HTTP>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.09>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 17:59:47 2016: C<Module> L<HTTP::Cookies|HTTP::Cookies>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.01>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:00:04 2016: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.15>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Sep  1 18:00:05 2016: C<Module> L<Mozilla::CA|Mozilla::CA>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 20160104>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:00:19 2016: C<Module> L<Net::SSLeay|Net::SSLeay>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 1.78>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:01:19 2016: C<Module> L<IO::Socket::SSL|IO::Socket::SSL>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.037>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:01:22 2016: C<Module> L<LWP::Protocol::https|LWP::Protocol::https>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 6.06>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:01:23 2016: C<Module> L<REST::Client|REST::Client>
-
-=over 4
-
-=item *
-
-C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 273>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Sep  1 18:19:11 2016: C<Module> L<IPC::Run3|IPC::Run3>
+=head2 Mon Sep 26 15:33:03 2016: C<Module> L<IPC::Run3|IPC::Run3>
 
 =over 4
 
@@ -1604,7 +1230,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 18:19:13 2016: C<Module> L<Test::Needs|Test::Needs>
+=head2 Mon Sep 26 15:33:05 2016: C<Module> L<Test::Needs|Test::Needs>
 
 =over 4
 
@@ -1626,7 +1252,7 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Sep  1 18:19:18 2016: C<Module> L<Log::Dispatch|Log::Dispatch>
+=head2 Mon Sep 26 15:33:10 2016: C<Module> L<Log::Dispatch|Log::Dispatch>
 
 =over 4
 
@@ -1641,6 +1267,556 @@ C<LINKTYPE: dynamic>
 =item *
 
 C<VERSION: 2.57>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:15 2016: C<Module> L<URI|URI>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.71>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:19 2016: C<Module> L<Exporter::Tiny|Exporter::Tiny>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.042>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:42 2016: C<Module> L<Type::Tiny|Type::Tiny>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.000005>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:46 2016: C<Module> L<Sub::Identify|Sub::Identify>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.12>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:49 2016: C<Module> L<namespace::autoclean|namespace::autoclean>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.28>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:50 2016: C<Module> L<IO::String|IO::String>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.08>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:53 2016: C<Module> L<Net::HTTP|Net::HTTP>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.09>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:55 2016: C<Module> L<LWP::MediaTypes|LWP::MediaTypes>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.02>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:56 2016: C<Module> L<HTTP::Date|HTTP::Date>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.02>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:57 2016: C<Module> L<Encode::Locale|Encode::Locale>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.05>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:33:59 2016: C<Module> L<IO::HTML|IO::HTML>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.001>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:01 2016: C<Module> L<HTTP::Message|HTTP::Message>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.11>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:05 2016: C<Module> L<File::Listing|File::Listing>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.04>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:07 2016: C<Module> L<HTTP::Negotiate|HTTP::Negotiate>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.01>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:08 2016: C<Module> L<HTML::Tagset|HTML::Tagset>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 3.20>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:13 2016: C<Module> L<HTML::Parser|HTML::Parser>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 3.72>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:19 2016: C<Module> L<HTTP::Daemon|HTTP::Daemon>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.01>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:25 2016: C<Module> L<WWW::RobotRules|WWW::RobotRules>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.02>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:26 2016: C<Module> L<HTTP::Cookies|HTTP::Cookies>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.01>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:43 2016: C<Module> L<LWP|LWP>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.15>
+
+=item *
+
+C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-download bin/lwp-dump>
+
+=back
+
+=head2 Mon Sep 26 15:34:45 2016: C<Module> L<Mozilla::CA|Mozilla::CA>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 20160104>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:34:58 2016: C<Module> L<Net::SSLeay|Net::SSLeay>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.78>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:35:58 2016: C<Module> L<IO::Socket::SSL|IO::Socket::SSL>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.038>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:36:00 2016: C<Module> L<LWP::Protocol::https|LWP::Protocol::https>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 6.06>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Sep 26 15:36:02 2016: C<Module> L<REST::Client|REST::Client>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 273>
 
 =item *
 
