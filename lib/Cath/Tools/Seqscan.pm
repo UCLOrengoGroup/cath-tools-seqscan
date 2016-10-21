@@ -184,10 +184,22 @@ sub run {
     my $align_fh = file( $file_out )->openw
       or die "! Error: failed to open '$file_out' for writing: $!";
     while (my $line = $io->getline) {
+      chomp($line);
       if ( $line =~ />cath/ ) {
-        $line =~ m{>cath\|([v_.0-9]+)\|([0-9a-zA-Z]{7})/(\S+)}
+        my ($id, $desc) = split( /\s+/, $line );
+
+        $id =~ m{>cath\|([v_.0-9]+)\|([0-9a-zA-Z]{7})}
           or die "! Error: failed to parse CATH sequence header '$line' (line: $.)";
-        my ($version, $domain_id, $segment_info) = ($1, $2, $3);
+
+        $desc ||= '';
+
+        my ($version, $domain_id) = ($1, $2);
+        my $segment_info = '?-?';
+
+        if ( $id =~ m{/(\S+)$} ) {
+          $segment_info = $1;
+        }
+
         my $boundary_map = $boundary_lookup->{$domain_id}
           or die "! Error: failed to find domain '$domain_id' in boundary lookup (line: $.)";
         my $atom_segments_str = $boundary_map->atom_segments_str;
@@ -197,11 +209,11 @@ sub run {
             . "   boundaries from ATOM records of mapping: '$atom_segments_str'\n"
         }
         my $exp_seqres_segments_str = $boundary_map->expanded_seqres_segments_str;
-        $line = ">cath|$version|$domain_id/$exp_seqres_segments_str\n";
+        $line = ">cath|$version|$domain_id/$exp_seqres_segments_str $desc";
 
         $log->debug( sprintf "FIX: %s %-30s -> %-30s\n", $domain_id, $segment_info, $exp_seqres_segments_str );
       }
-      $align_fh->print( $line );
+      $align_fh->print( $line . "\n" );
     }
     $align_fh->close;
   }
@@ -215,9 +227,10 @@ sub get_domain_lookup_from_alignment {
   while ( my $line = $align_fh->getline ) {
     next unless $line =~ />cath/;
     chomp($line);
+    $line =~ s/\s+$//mg;
     my ($db,$ver,$id_segs) = split(/\|/, $line);
     my ($id, $seg_info) = split(/\//, $id_segs);
-    confess "! Error: id '$id' does not look like a CATH domain id"
+    confess "! Error: id '$id' does not look like a CATH domain id (line: '$line')"
       unless is_CathDomainID( $id );
     $domains{$id} = $seg_info;
   }
