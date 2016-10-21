@@ -1,5 +1,5 @@
 {
-   "abstract" : "unknown",
+   "abstract" : "scan sequence against funfams in CATH",
    "author" : [
       "unknown"
    ],
@@ -32,12 +32,22 @@
       },
       "runtime" : {
          "requires" : {
+            "IO::String" : "0",
+            "JSON::Any" : "0",
             "Log::Dispatch" : "0",
             "Moo" : "0",
             "MooX::Options" : "0",
+            "Params::Validate" : "0",
             "Path::Class" : "0",
             "REST::Client" : "0",
-            "URI" : "0"
+            "Text::LineFold" : "0",
+            "Try::Tiny" : "0",
+            "Type::Library" : "0",
+            "Type::Tiny" : "0",
+            "Type::Utils" : "0",
+            "Types::Standard" : "0",
+            "URI" : "0",
+            "namespace::autoclean" : "0"
          }
       }
    },
