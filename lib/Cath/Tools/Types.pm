@@ -12,7 +12,7 @@ use Carp qw/ croak /;
 use Cath::Tools::Segment;
 
 declare CathDomainID,
-  where { ! ref $_ && $_ =~ /^[0-9][a-z0-9]{3}[A-Z][0-9]{2}$/ },
+  where { ! ref $_ && $_ =~ /^[0-9][a-z0-9]{3}[a-zA-Z][0-9]{2}$/ },
     message { "$_ doesn't look like a CATH domain id" };
 
 

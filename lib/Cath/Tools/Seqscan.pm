@@ -6,7 +6,15 @@ Cath::Tools::Seqscan - scan sequence against funfams in CATH
 
 =head1 SYNOPSIS
 
+  # take params from the command line
   $app = Cath::Tools::Seqscan->new_with_options()
+
+  # create from code
+  $app = Cath::Tools::Seqscan->new(
+    in  => '/path/to/fasta.fa',
+    out => '/path/to/output/dir/',
+  );
+
   $app->run;
 
 =cut
@@ -197,6 +205,8 @@ sub run {
     }
     $align_fh->close;
   }
+
+  return 1;
 }
 
 sub get_domain_lookup_from_alignment {
