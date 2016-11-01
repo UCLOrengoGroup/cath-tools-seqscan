@@ -27,7 +27,7 @@ diag( "tmp_dir: $tmp_dir" );
 
 ok( $app->run, 'app runs okay' );
 
-my $aln_file = dir( "$tmp_dir" )->file( "3.40.50.1580-FF-5979.fasta" );
+my $aln_file = dir( "$tmp_dir" )->file( "1.10.565.10-FF-338.fasta" );
 
 ok( -e $aln_file, "alignment file `$aln_file` exists" );
 
