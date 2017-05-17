@@ -15,30 +15,56 @@ Currently this consists of a Perl script demonstrating how the CATH API can be u
 Submit a query sequence and output the alignment for the 5 matches to the current directory:
 
 ```
-perl script/cath-tools-seqscan.pl --in=query.fasta
+./script/cath-tools-seqscan.pl --in=query.fasta
 ```
 
 Output alignments for the top 10 matches to a specific directory:
 
 ```
-perl script/cath-tools-seqscan.pl --in=query.fasta --out=aln_dir --max_aln=10
+./script/cath-tools-seqscan.pl --in=query.fasta --out=aln_dir --max_aln=10
 ```
 
 ## Usage
 ```
-USAGE: cath-tools-seqscan.pl [-h] [long options...] --in=query.fasta
+USAGE: cath-tools-seqscan.pl [-h] [long options...]
 
-    --in=String    Query sequence to submit (FASTA file)
+    --host=String   Host to use for API requests
+    --in=String     Query sequence to submit (FASTA file)
+    --max_aln=Int   Maximum number of alignments to output (default: 5)
+    --max_hits=Int  Maximum number of hits to output (default: 50)
+    --out=String    Directory to output alignments (STOCKHOLM format)
+    --queue=String  Specify a custom queue
 
-    --host=String    API host (default: 'beta.cathdb.info')
-    --out=String     directory to output alignments (default './')
-    --max_aln=Int    max number of alignments to output (default: 5)
-    --max_hits=Int   max number of hits to report (default: 50)
+    --usage         show a short help message
+    -h              show a compact help message
+    --help          show a long help message
+    --man           show the manual
+```
 
-    --usage          show a short help message
-    -h               show a compact help message
-    --help           show a long help message
-    --man            show the manual
+### Examples
+
+Search a sequence against CATH models:
+
+```
+cath-tools-seqscan.pl --in=t/P03372.fa
+```
+
+Return the 100 top hits (rather than the top 50 hits):
+
+```
+cath-tools-seqscan.pl --in=t/P03372.fa --max_hits=100
+```
+
+Build alignments for just the best 3 hits (rather than the best 3 hits):
+
+```
+cath-tools-seqscan.pl --in=t/P03372.fa --max_aln=3
+```
+
+Run this job on a specific queue (the default is 'api')
+
+```
+cath-tools-seqscan.pl --in=t/P03372.fa --queue=<your_queue_name>
 ```
 
 ## Dependencies
@@ -52,19 +78,13 @@ though - please log issues with GitHub.
 
 ## Mapping sequence to structure
 
-**TL;DR**: the numbering in the FASTA headers of the resulting alignments depends on the type of entry:
+**TL;DR**: the numbering in the resulting alignments depends on the type of entry:
 
- * ```biomap```: numbering is based on the full protein sequence
- * ```cath```: numbering is based on the SEQRES records in the PDB chain (the script applies a fix to correct the incoming alignments)
+ * ```UniProtKB```: numbering is based on the full protein sequence
+ * ```CATH Domain```: numbering is based on the SEQRES records in the PDB chain (the script applies a fix to correct the incoming alignments)
 
 It's not always trivial to map between residues in a sequence alignment and residues in a 3D structure.
 A couple of issues (#4 and #5) highlight this. The sequence headers in the alignment provide
-information on the start/stop positions for each entry. For the ```biomap``` entries, this is a sequential
-numbering based on the full protein sequence. For the ```cath``` entries, this is usually based on the PDB
-residue labels that appear in the ATOM records of the PDB (e.g. not sequential numbers). To further complicate things, the sequences used for the CATH domains actually come from the PDB SEQRES records,
-rather than the ATOM records. As a result, the domain sequences can contain residues not observed in the PDB
-structure and this can affect the numbering scheme.
-
-So, long story short - the script currently contains a hack that will 'correct' the
-headers in the resulting sequence alignment so that the CATH domains will have start/stop
-positions that directly map to the SEQRES records.
+information on the start/stop positions for each entry. For the ```UniProtKB``` entries, this is a sequential
+numbering based on the full protein sequence. For the ```CATH Domain``` entries, this is a sequential numbering scheme based on the sequence specified in the SEQRES records of the PDB file. The meta data in the headers provides a mapping between this numbering
+and the PDB residue labels in the ATOM records (which look like numbers but aren't).

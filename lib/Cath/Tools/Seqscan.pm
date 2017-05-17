@@ -31,7 +31,6 @@ use IO::String;
 use Carp qw/ confess /;
 
 use Cath::Tools::Types qw/ is_CathDomainID /;
-use Cath::Tools::DomainBoundaryMapIO;
 
 my $log = Log::Dispatch->new(
   outputs => [
@@ -45,17 +44,16 @@ my %DEFAULT_HEADERS = (
   'Content-Accept' => 'application/json',
 );
 
-my $DEFAULT_MAPPING_FILE = "$FindBin::Bin/../data/domain-sequence-numbering.v4_1_0.txt.gz";
+my $QUEUE_NAME_PREFIX = 'hmmscan_';
 
 has 'client' => ( is => 'ro', default => sub { REST::Client->new() } );
 has 'json'   => ( is => 'ro', default => sub { JSON::Any->new() } );
-has 'mapping_file' => ( is => 'ro', default => sub { $DEFAULT_MAPPING_FILE } );
 
 option 'host' => (
   doc => 'Host to use for API requests',
   format => 's',
   is => 'ro',
-  default => 'http://beta.cathdb.info/',
+  default => 'http://www.cathdb.info/',
 );
 
 option 'in' => (
@@ -65,8 +63,15 @@ option 'in' => (
   required => 1,
 );
 
+option 'queue' => (
+  doc => 'Specify a custom queue',
+  format => 's',
+  is => 'ro',
+  default => 'api',
+);
+
 option 'out' => (
-  doc => 'Directory to output alignments (FASTA file)',
+  doc => 'Directory to output alignments (STOCKHOLM format)',
   format => 's',
   is => 'ro',
   default => sub { dir() }
@@ -106,7 +111,8 @@ sub run {
   $log->info( sprintf "Setting host to %s\n", $self->host );
   $client->setHost( $self->host );
 
-  my $body = $json->to_json( { fasta => $query } );
+  my $queue_name = $QUEUE_NAME_PREFIX . $self->queue;
+  my $body = $json->to_json( { fasta => $query, queue => $queue_name } );
 
   $log->info( "Submitting sequence... \n" );
   my $submit_content = $self->POST( "/search/by_funfhmmer", $body );
@@ -150,93 +156,27 @@ sub run {
   for (my $hit_idx=0; $hit_idx < $max_aln_count && $hit_idx < scalar @hits; $hit_idx++) {
     my $hit_id = $hits[ $hit_idx ]->{match_id};
 
-    (my $file_name = $hit_id ) =~ s{[^0-9a-zA-Z\-_\.]}{-}g;
-    my $file_out = $dir_out->file( $file_name . ".fasta" );
-
     $log->info( sprintf "Retrieving alignment [%d] %s ...\n", $hit_idx + 1, $hit_id );
 
     my $align_body = $json->to_json( { task_id => $task_id, hit_id => $hit_id } );
     my $align_content = $self->POST( "/search/by_sequence/align_hit", $align_body );
 
-    # get the domain boundary fixes for the CATH domains in the alignment
 
-    # get a list of the domain ids
-    my $io = IO::String->new( $align_content );
-    my $cath_domain_lookup = get_domain_lookup_from_alignment( $io );
-    $io->close;
-    $log->info( sprintf "Found %d CATH domains in alignment, searching for updated boundaries ...",
-      scalar keys %$cath_domain_lookup);
-
-    # find these domain ids in the boundary lookup file
-    my $domain_boundary_io = Cath::Tools::DomainBoundaryMapIO->new(
-      file => $self->mapping_file,
-      filter_ids => [ keys %$cath_domain_lookup ],
-    );
-
-    my $boundary_lookup = $domain_boundary_io->get_lookup();
-    $log->info( sprintf "found %d entries\n", scalar keys %$boundary_lookup );
+    (my $file_name = $hit_id ) =~ s{[^0-9a-zA-Z\-_\.]}{-}g;
+    my $file_out = $dir_out->file( $file_name . ".sto" );
 
     # write the alignment out, fixing the domain boundaries as we go...
     $log->info( "Writing alignment to file $file_out ... \n" );
-    $io = IO::String->new( $align_content );
 
-    # HACK: fix 'atom' start/stop with 'expanded seqres' start/stop
-    my $align_fh = file( $file_out )->openw
-      or die "! Error: failed to open '$file_out' for writing: $!";
-    while (my $line = $io->getline) {
-      chomp($line);
-      if ( $line =~ />cath/ ) {
-        my ($id, $desc) = split( /\s+/, $line );
+    my $fh_out = $file_out->openw()
+      or die "! Error: failed to output alignment to file '$file_out': $!";
 
-        $id =~ m{>cath\|([v_.0-9]+)\|([0-9a-zA-Z]{7})}
-          or die "! Error: failed to parse CATH sequence header '$line' (line: $.)";
-
-        $desc ||= '';
-
-        my ($version, $domain_id) = ($1, $2);
-        my $segment_info = '?-?';
-
-        if ( $id =~ m{/(\S+)$} ) {
-          $segment_info = $1;
-        }
-
-        my $boundary_map = $boundary_lookup->{$domain_id}
-          or die "! Error: failed to find domain '$domain_id' in boundary lookup (line: $.)";
-        my $atom_segments_str = $boundary_map->atom_segments_str;
-        if (0 && $segment_info ne $atom_segments_str ) {
-          warn "! Warning: mismatching domain boundary for domain $domain_id\n"
-            . "   boundaries from alignment header: '$segment_info'\n"
-            . "   boundaries from ATOM records of mapping: '$atom_segments_str'\n"
-        }
-        my $exp_seqres_segments_str = $boundary_map->expanded_seqres_segments_str;
-        $line = ">cath|$version|$domain_id/$exp_seqres_segments_str $desc";
-
-        $log->debug( sprintf "FIX: %s %-30s -> %-30s\n", $domain_id, $segment_info, $exp_seqres_segments_str );
-      }
-      $align_fh->print( $line . "\n" );
-    }
-    $align_fh->close;
+    $fh_out->print( $align_content );
+    $fh_out->close;
   }
 
   return 1;
 }
-
-sub get_domain_lookup_from_alignment {
-  my $align_fh = shift;
-  my %domains;
-  while ( my $line = $align_fh->getline ) {
-    next unless $line =~ />cath/;
-    chomp($line);
-    $line =~ s/\s+$//mg;
-    my ($db,$ver,$id_segs) = split(/\|/, $line);
-    my ($id, $seg_info) = split(/\//, $id_segs);
-    confess "! Error: id '$id' does not look like a CATH domain id (line: '$line')"
-      unless is_CathDomainID( $id );
-    $domains{$id} = $seg_info;
-  }
-  return \%domains;
-}
-
 
 sub POST {
   my ($self, $url, $body, $headers) = @_;
