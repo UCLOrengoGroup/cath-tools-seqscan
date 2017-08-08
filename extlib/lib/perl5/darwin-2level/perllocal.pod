@@ -1,0 +1,22 @@
+=head2 Tue Aug  8 12:30:03 2017: C<Module> L<Unicode::LineBreak|Unicode::LineBreak>
+
+=over 4
+
+=item *
+
+C<installed into: /Users/ian/test/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2017.004>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
