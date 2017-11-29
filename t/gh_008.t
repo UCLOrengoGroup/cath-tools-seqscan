@@ -1,46 +1,24 @@
-use Test::More tests => 5;
+use Test::More tests => 2;
 
 use strict;
 use warnings;
-
 use FindBin;
-use lib "$FindBin::Bin/../extlib/lib/perl5";
+use lib "$FindBin::Bin/lib";
+use TestSeqscan;
 
-use Path::Class;
-use Bio::SeqIO;
-use File::Temp qw/ tempdir /;
-
-use_ok( 'Cath::Tools::Seqscan' );
-
-my $tmp_dir = tempdir( CLEANUP => 0 );
-
-my $app = Cath::Tools::Seqscan->new(
-  in  => "$FindBin::Bin/gh_008.fa",
-  out => $tmp_dir,
-  max_aln => 1,
-  no_cache => 1,
-);
-
-isa_ok( $app, 'Cath::Tools::Seqscan' );
-
-diag( "tmp_dir: $tmp_dir" );
+my $app = TestSeqscan->new();
 
 ok( $app->run, 'app runs okay' );
 
-my $aln_file = dir( "$tmp_dir" )->file( "1.10.565.10-FF-338.fasta" );
-
-ok( -e $aln_file, "alignment file `$aln_file` exists" );
-
-my $fh = $aln_file->open;
-
-my $seqio = Bio::SeqIO->new( -file => $aln_file, -format => 'fasta' );
+my $aln_file = "1.10.565.10-FF-338.sto";
+my $seqs_by_id = $app->parse_stockholm( $aln_file );
 
 my $seq_length;
 my $seq_idx=0;
-while( my $seq = $seqio->next_seq ) {
-  $seq_length ||= $seq->length;
-  if ( $seq->length != $seq_length ) {
-    die sprintf( "! Error: length mismatch in sequence [%d] alignment file `$aln_file` (%d vs %d residues)", $seq_idx, $seq_length, $seq->length );
+for my $seq ( sort { $a->{order} <=> $b->{order} } values %$seqs_by_id ) {
+  $seq_length ||= length( $seq->{seq} );
+  if ( length($seq->{seq}) != $seq_length ) {
+    die sprintf( "! Error: length mismatch in sequence [%d] alignment file `$aln_file` (%d vs %d residues)", $seq_idx, $seq_length, length($seq->{seq}) );
   }
   $seq_idx++;
 }

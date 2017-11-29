@@ -11,16 +11,17 @@ use TestSeqscan;
 my $app = TestSeqscan->new();
 ok( $app->run, 'app runs okay' );
 
-my $seqio = $app->aln_as_seqio( "1.10.565.10-FF-338.fasta" );
+my $aln_file = "1.10.565.10-FF-338.sto";
+my $seqs_by_id = $app->parse_stockholm( $aln_file );
 
 my $found_domain = 0;
-while( my $seq = $seqio->next_seq ) {
-  if ( $seq->id =~ m{2jfaA00/([0-9]+)\-([0-9]+)} ) {
+for my $seq ( values %$seqs_by_id ) {
+  if ( $seq->{id} =~ m{2jfaA00/([0-9]+)\-([0-9]+)} ) {
     my ($start, $stop) = ($1, $2);
     $found_domain = 1;
     is( $start, 24,  "Start looks okay" );
     is( $stop, 252, "Stop looks okay" );
-    my $seq = $seq->seq;
+    my $seq = $seq->{seq};
     # get rid of white space and gaps
     $seq =~ s/\s+//mg;
     $seq =~ s/[.\-]//mg;
