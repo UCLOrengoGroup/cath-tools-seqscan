@@ -21,9 +21,10 @@ Cath::Tools::Seqscan - scan sequence against funfams in CATH
 
 use Moo;
 use MooX::Options;
-use JSON::Any;
-use Path::Class;
-use REST::Client;
+use JSON::MaybeXS;
+use Path::Tiny;
+use HTTP::Tiny;
+use Try::Tiny;
 use Log::Dispatch;
 use Data::Dumper;
 use URI;
@@ -46,14 +47,19 @@ my %DEFAULT_HEADERS = (
 
 my $QUEUE_NAME_PREFIX = 'hmmscan_';
 
-has 'client' => ( is => 'ro', default => sub { REST::Client->new() } );
-has 'json'   => ( is => 'ro', default => sub { JSON::Any->new() } );
+has 'client' => ( is => 'ro', lazy => 1, builder => '_build_client' );
+has 'json'   => ( is => 'ro', default => sub { JSON::MaybeXS->new() } );
+
+sub _build_client {
+  my $self = shift;
+  my $http = HTTP::Tiny->new();
+}
 
 option 'host' => (
   doc => 'Host to use for API requests',
   format => 's',
   is => 'ro',
-  default => 'http://www.cathdb.info/',
+  default => 'http://www.cathdb.info',
 );
 
 option 'in' => (
@@ -74,7 +80,7 @@ option 'out' => (
   doc => 'Directory to output alignments (STOCKHOLM format)',
   format => 's',
   is => 'ro',
-  default => sub { dir() }
+  default => sub { path() }
 );
 
 option 'max_hits' => (
@@ -94,13 +100,14 @@ option 'max_aln' => (
 sub run {
   my $self = shift;
 
-  my $query = file( $self->in )->slurp;
+  my $query = path( $self->in )->slurp;
 
-  my $client        = $self->client;
   my $json          = $self->json;
-  my $dir_out       = dir( $self->out );
+  my $dir_out       = path( $self->out );
   my $max_aln_count = $self->max_aln;
   my $max_hit_count = $self->max_hits;
+
+  my $host          = $self->host;
 
   if ( ! -d $dir_out ) {
     $log->info( "Output directory `$dir_out` does not exist - creating ...\n" );
@@ -108,23 +115,25 @@ sub run {
       or die "! Error: failed to create directory: $!";
   }
 
-  $log->info( sprintf "Setting host to %s\n", $self->host );
-  $client->setHost( $self->host );
+  $log->info( sprintf "Using host $host\n" );
 
   my $queue_name = $QUEUE_NAME_PREFIX . $self->queue;
-  my $body = $json->to_json( { fasta => $query, queue => $queue_name } );
+  my $body = $json->encode( { fasta => $query, queue => $queue_name } );
 
   $log->info( "Submitting sequence... \n" );
-  my $submit_content = $self->POST( "/search/by_funfhmmer", $body );
-  my $task_id = $json->from_json( $submit_content )->{task_id};
+  my $submit_content = $self->POST( "$host/search/by_funfhmmer", $body );
+  my $task_id = $json->decode( $submit_content )->{task_id};
   $log->info( "Sequence submitted... got task id: $task_id\n");
 
   my $is_finished = 0;
   while( !$is_finished ) {
 
-    my $check_content = $self->GET( "/search/by_funfhmmer/check/$task_id" );
+    my $check_content = $self->GET( "$host/search/by_funfhmmer/check/$task_id" );
 
-    my $status = $json->from_json( $check_content )->{message};
+    my $status = try { $json->decode( $check_content )->{message} }
+    catch {
+        die "! Error: failed to decode content: " . substr( $check_content, 0, 100 ) . '...';
+    };
 
     die "! Error: expected 'message' in response"
       unless defined $status;
@@ -140,8 +149,8 @@ sub run {
 
   $log->info( "Retrieving scan results for task id: $task_id\n" );
 
-  my $results_content = $self->GET( "/search/by_funfhmmer/results/$task_id?max_hits=$max_hit_count" );
-  my $scan = $json->from_json( $results_content )->{funfam_scan};
+  my $results_content = $self->GET( "$host/search/by_funfhmmer/results/$task_id?max_hits=$max_hit_count" );
+  my $scan = $json->decode( $results_content )->{funfam_scan};
 
   # prints out the entire data structure
   #warn Dumper( $scan );
@@ -158,12 +167,11 @@ sub run {
 
     $log->info( sprintf "Retrieving alignment [%d] %s ...\n", $hit_idx + 1, $hit_id );
 
-    my $align_body = $json->to_json( { task_id => $task_id, hit_id => $hit_id } );
-    my $align_content = $self->POST( "/search/by_sequence/align_hit", $align_body );
-
+    my $align_body = $json->encode( { task_id => $task_id, hit_id => $hit_id } );
+    my $align_content = $self->POST( "$host/search/by_sequence/align_hit", $align_body );
 
     (my $file_name = $hit_id ) =~ s{[^0-9a-zA-Z\-_\.]}{-}g;
-    my $file_out = $dir_out->file( $file_name . ".sto" );
+    my $file_out = $dir_out->path( $file_name . ".sto" );
 
     # write the alignment out, fixing the domain boundaries as we go...
     $log->info( "Writing alignment to file $file_out ... \n" );
@@ -171,8 +179,8 @@ sub run {
     my $fh_out = $file_out->openw()
       or die "! Error: failed to output alignment to file '$file_out': $!";
 
-    $fh_out->print( $align_content );
-    $fh_out->close;
+    print $fh_out $align_content;
+    close( $fh_out );
   }
 
   return 1;
@@ -187,15 +195,15 @@ sub POST {
   my $client = $self->client;
 
   $log->info( sprintf "%-6s %-70s", "POST", $url );
-  $self->client->POST( $url, $body, $headers );
-  $log->info( sprintf " %d\n", $client->responseCode );
+  my $response = $client->post( $url, { content => $body, headers => $headers } );
+  $log->info( sprintf " %d\n", $response->{status} );
 
-  if ( $client->responseCode !~ /^20/ ) {
-    $log->info( "ERROR: response: " . $client->responseContent . "\n" );
+  if ( ! $response->{success} ) {
+    $log->info( "ERROR: response: " . $response->{content} . "\n" );
     die "! Error: expected response code 20*";
   }
 
-  return $client->responseContent;
+  return $response->{content};
 }
 
 sub GET {
@@ -207,13 +215,13 @@ sub GET {
   my $client = $self->client;
 
   $log->info( sprintf "%-6s %-70s", "GET", $url );
-  $client->GET( $url, $headers );
-  $log->info( sprintf " %d\n", $client->responseCode );
+  my $response = $client->get( $url, { headers => $headers } );
+  $log->info( sprintf " %d\n", $response->{status} );
 
   die "! Error: expected response code 20*"
-    unless $client->responseCode =~ /^20/;
+    unless $response->{success};
 
-  return $client->responseContent;
+  return $response->{content};
 }
 
 1;
