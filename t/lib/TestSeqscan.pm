@@ -64,11 +64,26 @@ sub _build_app {
   return $app;
 }
 
-sub aln_as_seqio {
+sub parse_stockholm {
   my $self  = shift;
   my $aln_filename = shift;
   my $aln_file = $self->out_dir->file( $aln_filename );
-  return Bio::SeqIO->new( -file => $aln_file, -format => 'fasta' );
+  my $aln_fh = $aln_file->openr;
+
+  my $seq_count=0;
+  my %seqs_by_id;
+  while ( my $line = $aln_fh->getline ) {
+    next if $line =~ /^#/;
+    last if $line =~ /^\//;
+    my ($id, $seq) = split( /\s+/, $line );
+    if ( exists $seqs_by_id{ $id } ) {
+      $seqs_by_id{ $id }->{seq} .= $seq;
+    }
+    else {
+      $seqs_by_id{ $id } = { id => $id, seq => $seq, order => $seq_count++ };
+    }
+  }
+  return \%seqs_by_id;
 }
 
 1;
