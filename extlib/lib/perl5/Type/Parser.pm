@@ -6,7 +6,7 @@ use warnings;
 sub _croak ($;@) { require Error::TypeTiny; goto \&Error::TypeTiny::croak }
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '1.000005';
+our $VERSION   = '1.002001';
 
 # Token types
 # 
@@ -343,7 +343,6 @@ Evaluate: {
 	Type::Parser::TokenStream;
 	
 	use Scalar::Util qw(looks_like_number);
-	use Text::Balanced qw(extract_quotelike);
 	
 	sub new
 	{
@@ -454,9 +453,13 @@ Evaluate: {
 			return $punctuation{$spelling};
 		}
 		
-		if (my $quotelike = extract_quotelike $self->{remaining})
+		if ($self->{remaining} =~ /\A\s*[q'"]/sm)
 		{
-			return bless([ Type::Parser::QUOTELIKE, $quotelike ], "Type::Parser::Token"),;
+			require Text::Balanced;
+			if (my $quotelike = Text::Balanced::extract_quotelike($self->{remaining}))
+			{
+				return bless([ Type::Parser::QUOTELIKE, $quotelike ], "Type::Parser::Token"),;
+			}
 		}
 		
 		if ($self->{remaining} =~ /^([+-]?[\w:.+]+)/sm)
@@ -607,7 +610,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013-2014 by Toby Inkster.
+This software is copyright (c) 2013-2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

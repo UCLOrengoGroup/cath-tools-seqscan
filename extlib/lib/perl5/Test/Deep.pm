@@ -21,7 +21,7 @@ unless (defined $Test::Deep::NoTest::NoTest)
 
 our ($Stack, %Compared, $CompareCache, %WrapCache, $Shallow);
 
-our $VERSION = '1.123';
+our $VERSION = '1.127';
 $VERSION =~ tr/_//d;
 
 require Exporter;
@@ -91,7 +91,7 @@ while (my ($pkg, $name) = splice @constructors, 0, 2)
 }
 
 {
-  our @EXPORT_OK = qw( descend render_stack class_base cmp_details deep_diag );
+  our @EXPORT_OK = qw( descend render_stack cmp_details deep_diag );
 
   our %EXPORT_TAGS;
   $EXPORT_TAGS{preload} = [];
@@ -413,13 +413,20 @@ sub wrap
 {
   my $data = shift;
 
-  return $data if Scalar::Util::blessed($data) and $data->isa("Test::Deep::Cmp");
+  my $class = Scalar::Util::blessed($data);
+  return $data if defined $class and $data->isa("Test::Deep::Cmp");
 
-  my ($class, $base) = class_base($data);
+  if (defined $class and $data->can('as_test_deep_cmp')) {
+    my $cmp = $data->as_test_deep_cmp;
+    return $cmp if $cmp->isa('Test::Deep::Cmp');
+    Carp::confess("object in expected structure provides as_test_deep_cmp but it did not return a Test::Deep::Cmp");
+  }
+
+  my $reftype = _td_reftype($data);
 
   my $cmp;
 
-  if($base eq '')
+  if($reftype eq '')
   {
     $cmp = $Test::Deep::LeafWrapper
          ? $Test::Deep::LeafWrapper->($data)
@@ -431,25 +438,27 @@ sub wrap
 
     return $WrapCache{$addr} if $WrapCache{$addr};
 
-    if($base eq 'ARRAY')
+    if($reftype eq 'ARRAY')
     {
       $cmp = array($data);
     }
-    elsif($base eq 'HASH')
+    elsif($reftype eq 'HASH')
     {
       $cmp = hash($data);
     }
-    elsif($base eq 'SCALAR' or $base eq 'REF')
+    elsif($reftype eq 'SCALAR' or $reftype eq 'REF')
     {
       $cmp = scalref($data);
     }
-    elsif(($base eq 'Regexp') or ($base eq 'REGEXP'))
+    elsif(($reftype eq 'Regexp') or ($reftype eq 'REGEXP'))
     {
       $cmp = regexpref($data);
     }
     else
     {
-      $cmp = shallow($data);
+      $cmp = $Test::Deep::LeafWrapper
+           ? $Test::Deep::LeafWrapper->($data)
+           : shallow($data);
     }
 
     $WrapCache{$addr} = $cmp;
@@ -457,29 +466,24 @@ sub wrap
   return $cmp;
 }
 
-sub class_base
+sub _td_reftype
 {
   my $val = shift;
 
-  if (ref $val)
-  {
-    my $blessed = Scalar::Util::blessed($val);
-    $blessed = defined($blessed) ? $blessed : "";
-    my $reftype = Scalar::Util::reftype($val);
+  my $reftype = Scalar::Util::reftype($val);
+  return '' unless defined $reftype;
 
+  return $reftype unless $Test::Deep::RegexpVersion::OldStyle;
 
-    if ($Test::Deep::RegexpVersion::OldStyle) {
-      if ($blessed eq "Regexp" and $reftype eq "SCALAR")
-      {
-        $reftype = "Regexp"
-      }
-    }
-    return ($blessed, $reftype);
-  }
-  else
+  my $blessed = Scalar::Util::blessed($val);
+  return $reftype unless defined $blessed;
+
+  if ($blessed && $blessed eq "Regexp" and $reftype eq "SCALAR")
   {
-    return ("", "");
+    $reftype = "Regexp"
   }
+
+  return $reftype;
 }
 
 sub render_stack

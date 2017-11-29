@@ -1,5 +1,5 @@
 package Sub::Exporter::Progressive;
-$Sub::Exporter::Progressive::VERSION = '0.001012';
+$Sub::Exporter::Progressive::VERSION = '0.001013';
 use strict;
 use warnings;
 
@@ -18,6 +18,7 @@ sub import {
 
    my $full_exporter;
    no strict 'refs';
+   no warnings 'once';
    @{"${inner_target}::EXPORT_OK"} = @{$export_data->{exports}};
    @{"${inner_target}::EXPORT"} = @{$export_data->{defaults}};
    %{"${inner_target}::EXPORT_TAGS"} = %{$export_data->{tags}};
@@ -114,7 +115,7 @@ Sub::Exporter::Progressive - Only use Sub::Exporter if you need it
 
 =head1 VERSION
 
-version 0.001012
+version 0.001013
 
 =head1 SYNOPSIS
 

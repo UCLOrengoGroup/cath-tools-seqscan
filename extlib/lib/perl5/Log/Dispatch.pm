@@ -5,14 +5,15 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use base qw( Log::Dispatch::Base );
-
+use Carp ();
+use Log::Dispatch::Types;
 use Log::Dispatch::Vars qw( %CanonicalLevelNames @OrderedLevels );
 use Module::Runtime qw( use_package_optimistically );
-use Params::Validate 1.03 qw(validate_with ARRAYREF CODEREF);
-use Carp ();
+use Params::ValidationCompiler qw( validation_for );
+
+use base qw( Log::Dispatch::Base );
 
 BEGIN {
     foreach my $l ( keys %CanonicalLevelNames ) {
@@ -24,57 +25,64 @@ BEGIN {
             );
         };
 
+        ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no strict 'refs';
         *{$l} = $sub;
     }
 }
 
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
-
-    my %p = validate_with(
-        params => \@_,
-        spec   => {
-            outputs   => { type => ARRAYREF,           optional => 1 },
-            callbacks => { type => ARRAYREF | CODEREF, optional => 1 }
+{
+    my $validator = validation_for(
+        params => {
+            outputs => {
+                type     => t('ArrayRef'),
+                optional => 1,
+            },
+            callbacks => {
+                type     => t('Callbacks'),
+                optional => 1,
+            },
         },
-        allow_extra => 1,    # for backward compatibility
     );
 
-    my $self = bless {}, $class;
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
 
-    my @cb = $self->_get_callbacks(%p);
-    $self->{callbacks} = \@cb if @cb;
+        my $self = bless {}, $class;
 
-    if ( my $outputs = $p{outputs} ) {
-        if ( ref $outputs->[1] eq 'HASH' ) {
+        $self->{callbacks} = $p{callbacks}
+            if $p{callbacks};
 
-            # 2.23 API
-            # outputs => [
-            #   File => { min_level => 'debug', filename => 'logfile' },
-            #   Screen => { min_level => 'warning' }
-            # ]
-            while ( my ( $class, $params ) = splice @$outputs, 0, 2 ) {
-                $self->_add_output( $class, %$params );
+        if ( my $outputs = $p{outputs} ) {
+            if ( ref $outputs->[1] eq 'HASH' ) {
+
+                # 2.23 API
+                # outputs => [
+                #   File => { min_level => 'debug', filename => 'logfile' },
+                #   Screen => { min_level => 'warning' }
+                # ]
+                while ( my ( $class, $params ) = splice @$outputs, 0, 2 ) {
+                    $self->_add_output( $class, %$params );
+                }
+            }
+            else {
+
+                # 2.24+ syntax
+                # outputs => [
+                #   [ 'File',   min_level => 'debug', filename => 'logfile' ],
+                #   [ 'Screen', min_level => 'warning' ]
+                # ]
+                foreach my $arr ( @{$outputs} ) {
+                    die "expected arrayref, not '$arr'"
+                        unless ref $arr eq 'ARRAY';
+                    $self->_add_output( @{$arr} );
+                }
             }
         }
-        else {
 
-            # 2.24+ syntax
-            # outputs => [
-            #   [ 'File',   min_level => 'debug', filename => 'logfile' ],
-            #   [ 'Screen', min_level => 'warning' ]
-            # ]
-            foreach my $arr (@$outputs) {
-                die "expected arrayref, not '$arr'"
-                    unless ref $arr eq 'ARRAY';
-                $self->_add_output(@$arr);
-            }
-        }
+        return $self;
     }
-
-    return $self;
 }
 
 sub clone {
@@ -109,8 +117,8 @@ sub add {
     # Once 5.6 is more established start using the warnings module.
     if ( exists $self->{outputs}{ $object->name } && $^W ) {
         Carp::carp(
-            "Log::Dispatch::* object ", $object->name,
-            " already exists."
+            'Log::Dispatch::* object ', $object->name,
+            ' already exists.'
         );
     }
 
@@ -136,18 +144,16 @@ sub callbacks {
     return @{ $self->{callbacks} };
 }
 
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub log {
     my $self = shift;
     my %p    = @_;
-
-    if ( exists $p{level} && $p{level} =~ /\A[0-7]\z/ ) {
-        $p{level} = $OrderedLevels[ $p{level} ];
-    }
 
     return unless $self->would_log( $p{level} );
 
     $self->_log_to_outputs( $self->_prepare_message(%p) );
 }
+## use critic
 
 sub _prepare_message {
     my $self = shift;
@@ -185,8 +191,10 @@ sub log_and_die {
 sub log_and_croak {
     my $self = shift;
 
-    $self->log_and_die( @_, carp_level => 3 );
+    $self->log_and_die(@_);
 }
+
+my @CARP_NOT = __PACKAGE__;
 
 sub _die_with_message {
     my $self = shift;
@@ -241,6 +249,10 @@ sub level_is_valid {
         Carp::croak('Logging level was not provided');
     }
 
+    if ( $level =~ /\A[0-9]+\z/ && $level <= $#OrderedLevels ) {
+        return $OrderedLevels[$level];
+    }
+
     return $CanonicalLevelNames{$level};
 }
 
@@ -286,7 +298,7 @@ Log::Dispatch - Dispatches messages to one or more outputs
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -364,7 +376,7 @@ string following '+' is taken to be a full classname. e.g.
 For each inner list, a new output object is created and added to the
 dispatcher (via the C<add()> method).
 
-See L<OUTPUT CLASSES> for the parameters that can be used when creating an
+See L</"OUTPUT CLASSES"> for the parameters that can be used when creating an
 output object.
 
 =item * callbacks( \& or [ \&, \&, ... ] )
@@ -399,7 +411,7 @@ Sends the message (at the appropriate level) to all the output objects that
 the dispatcher contains (by calling the C<log_to> method repeatedly).
 
 The level can be specified by name or by an integer from 0 (debug) to 7
-(critical).
+(emergency).
 
 This method also accepts a subroutine reference as the message
 argument. This reference will be called only if there is an output
@@ -484,7 +496,7 @@ This returns true if the logger will log a message at the given level.
 
 =head2 $dispatch->add( Log::Dispatch::* OBJECT )
 
-Adds a new L<output object|OUTPUT CLASSES> to the dispatcher. If an object
+Adds a new L<output object|/"OUTPUT CLASSES"> to the dispatcher. If an object
 of the same name already exists, then that object is replaced, with
 a warning if C<$^W> is true.
 
@@ -533,11 +545,11 @@ form of generated names, as they may change.
 
 =item * min_level ($)
 
-The minimum L<logging level|LOG LEVELS> this object will accept. Required.
+The minimum L<logging level|/"LOG LEVELS"> this object will accept. Required.
 
 =item * max_level ($)
 
-The maximum L<logging level|LOG LEVELS> this object will accept. By default
+The maximum L<logging level|/"LOG LEVELS"> this object will accept. By default
 the maximum is the highest possible level (which means functionally that the
 object has no maximum).
 
@@ -668,10 +680,13 @@ L<Log::Dispatch::Syslog>
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 DONATIONS
 
@@ -696,13 +711,21 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Doug Bell Graham Ollis Gregory Oschwald Jonathan Swartz Karen Etheridge Konrad Bucheli Olaf Alders Olivier Mengué Rohan Carly Ross Attrill Salvador Fandiño Steve Bertrand Whitney Jackson
+=for stopwords Anirvan Chatterjee Carsten Grohmann Doug Bell Graham Ollis Gregory Oschwald Johann Rolschewski Jonathan Swartz Karen Etheridge Kerin Millar Kivanc Yazan Konrad Bucheli Michael Schout Olaf Alders Olivier Mengué Rohan Carly Ross Attrill Salvador Fandiño Slaven Rezic Steve Bertrand Whitney Jackson
 
 =over 4
 
 =item *
 
-Doug Bell <madcityzen@gmail.com>
+Anirvan Chatterjee <anirvan@users.noreply.github.com>
+
+=item *
+
+Carsten Grohmann <mail@carstengrohmann.de>
+
+=item *
+
+Doug Bell <doug@preaction.me>
 
 =item *
 
@@ -714,6 +737,10 @@ Gregory Oschwald <goschwald@maxmind.com>
 
 =item *
 
+Johann Rolschewski <jorol@cpan.org>
+
+=item *
+
 Jonathan Swartz <swartz@pobox.com>
 
 =item *
@@ -722,7 +749,19 @@ Karen Etheridge <ether@cpan.org>
 
 =item *
 
+Kerin Millar <kfm@plushkava.net>
+
+=item *
+
+Kivanc Yazan <kivancyazan@gmail.com>
+
+=item *
+
 Konrad Bucheli <kb@open.ch>
+
+=item *
+
+Michael Schout <mschout@gkg.net>
 
 =item *
 
@@ -746,6 +785,10 @@ Salvador Fandiño <sfandino@yahoo.com>
 
 =item *
 
+Slaven Rezic <srezic@cpan.org>
+
+=item *
+
 Steve Bertrand <steveb@cpan.org>
 
 =item *
@@ -756,10 +799,13 @@ Whitney Jackson <whitney.jackson@baml.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

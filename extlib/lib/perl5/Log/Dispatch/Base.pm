@@ -4,23 +4,9 @@ use strict;
 use warnings;
 use Scalar::Util qw( refaddr );
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-sub _get_callbacks {
-    shift;
-    my %p = @_;
-
-    return unless exists $p{callbacks};
-
-    return @{ $p{callbacks} }
-        if ref $p{callbacks} eq 'ARRAY';
-
-    return $p{callbacks}
-        if ref $p{callbacks} eq 'CODE';
-
-    return;
-}
-
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _apply_callbacks {
     my $self = shift;
     my %p    = @_;
@@ -76,7 +62,7 @@ Log::Dispatch::Base - Code shared by dispatch and output objects.
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -97,10 +83,13 @@ does.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -108,10 +97,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

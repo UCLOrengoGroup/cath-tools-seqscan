@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '1.000005';
+our $VERSION   = '1.002001';
 
 use Scalar::Util qw< blessed refaddr weaken >;
 
@@ -170,7 +170,7 @@ sub _TypeTinyFromMoose
 	$opts{display_name} = $t->name;
 	$opts{constraint}   = $t->constraint;
 	$opts{parent}       = to_TypeTiny($t->parent)              if $t->has_parent;
-	$opts{inlined}      = sub { shift; $t->_inline_check(@_) } if $t->can_be_inlined;
+	$opts{inlined}      = sub { shift; $t->_inline_check(@_) } if $t->can("can_be_inlined") && $t->can_be_inlined;
 	$opts{message}      = sub { $t->get_message($_) }          if $t->has_message;
 	$opts{moose_type}   = $t;
 	
@@ -441,7 +441,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013-2014 by Toby Inkster.
+This software is copyright (c) 2013-2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

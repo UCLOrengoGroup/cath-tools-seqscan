@@ -1,4 +1,4 @@
-#!/export/apps/perlbrew/perls/orengocat-perl/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;

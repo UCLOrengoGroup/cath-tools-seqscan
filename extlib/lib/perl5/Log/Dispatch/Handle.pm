@@ -3,27 +3,28 @@ package Log::Dispatch::Handle;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use Log::Dispatch::Output;
+use Log::Dispatch::Types;
+use Params::ValidationCompiler qw( validation_for );
 
 use base qw( Log::Dispatch::Output );
 
-use Params::Validate qw(validate SCALAR ARRAYREF BOOLEAN);
-Params::Validate::validation_options( allow_extra => 1 );
+{
+    my $validator = validation_for(
+        params => { handle => { type => t('CanPrint') } },
+        slurpy => 1,
+    );
 
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
 
-    my %p = validate( @_, { handle => { can => 'print' } } );
+        my $self = bless { handle => delete $p{handle} }, $class;
+        $self->_basic_init(%p);
 
-    my $self = bless {}, $class;
-
-    $self->_basic_init(%p);
-    $self->{handle} = $p{handle};
-
-    return $self;
+        return $self;
+    }
 }
 
 sub log_message {
@@ -50,7 +51,7 @@ Log::Dispatch::Handle - Object for logging to IO::Handle classes
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -91,10 +92,13 @@ The handle object. This object must implement a C<print()> method.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -102,10 +106,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

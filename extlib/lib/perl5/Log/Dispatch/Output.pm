@@ -3,17 +3,16 @@ package Log::Dispatch::Output;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
-
-use Log::Dispatch;
-
-use base qw( Log::Dispatch::Base );
-
-use Log::Dispatch::Vars qw( %LevelNamesToNumbers @OrderedLevels );
-use Params::Validate qw(validate SCALAR ARRAYREF CODEREF BOOLEAN);
-Params::Validate::validation_options( allow_extra => 1 );
+our $VERSION = '2.67';
 
 use Carp ();
+use Try::Tiny;
+use Log::Dispatch;
+use Log::Dispatch::Types;
+use Log::Dispatch::Vars qw( %LevelNamesToNumbers @OrderedLevels );
+use Params::ValidationCompiler qw( validation_for );
+
+use base qw( Log::Dispatch::Base );
 
 sub new {
     my $proto = shift;
@@ -22,68 +21,85 @@ sub new {
     die "The new method must be overridden in the $class subclass";
 }
 
-sub log {
-    my $self = shift;
+{
+    my $validator = validation_for(
+        params => {
+            level => { type => t('LogLevel') },
 
-    my %p = validate(
-        @_, {
-            level   => { type => SCALAR },
-            message => { type => SCALAR },
-        }
+            # Pre-PVC we accepted empty strings, which is weird, but we don't
+            # want to break back-compat. See
+            # https://github.com/houseabsolute/Log-Dispatch/issues/38.
+            message => { type => t('Str') },
+        },
+        slurpy => 1,
     );
 
-    return unless $self->_should_log( $p{level} );
+    ## no critic (Subroutines::ProhibitBuiltinHomonyms)
+    sub log {
+        my $self = shift;
+        my %p    = $validator->(@_);
 
-    local $!;
-    $p{message} = $self->_apply_callbacks(%p)
-        if $self->{callbacks};
+        return unless $self->_should_log( $p{level} );
 
-    $self->log_message(%p);
+        local $! = undef;
+        $p{message} = $self->_apply_callbacks(%p)
+            if $self->{callbacks};
+
+        $self->log_message(%p);
+    }
 }
 
-sub _basic_init {
-    my $self = shift;
-
-    my %p = validate(
-        @_, {
-            name      => { type => SCALAR, optional => 1 },
-            min_level => { type => SCALAR, required => 1 },
+{
+    my $validator = validation_for(
+        params => {
+            name => {
+                type     => t('NonEmptyStr'),
+                optional => 1,
+            },
+            min_level => { type => t('LogLevel') },
             max_level => {
-                type     => SCALAR,
-                optional => 1
+                type     => t('LogLevel'),
+                optional => 1,
             },
             callbacks => {
-                type     => ARRAYREF | CODEREF,
-                optional => 1
+                type     => t('Callbacks'),
+                optional => 1,
             },
-            newline => { type => BOOLEAN, optional => 1 },
+            newline => {
+                type    => t('Bool'),
+                default => 0,
+            },
+        },
+
+        # This is primarily here for the benefit of outputs outside of this
+        # distro which may be passing who-knows-what to this method.
+        slurpy => 1,
+    );
+
+    ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
+    sub _basic_init {
+        my $self = shift;
+        my %p    = $validator->(@_);
+
+        $self->{level_names}   = \@OrderedLevels;
+        $self->{level_numbers} = \%LevelNamesToNumbers;
+
+        $self->{name} = $p{name} || $self->_unique_name();
+
+        $self->{min_level} = $self->_level_as_number( $p{min_level} );
+
+        # Either use the parameter supplied or just the highest possible level.
+        $self->{max_level} = (
+            exists $p{max_level}
+            ? $self->_level_as_number( $p{max_level} )
+            : $#{ $self->{level_names} }
+        );
+
+        $self->{callbacks} = $p{callbacks} if $p{callbacks};
+
+        if ( $p{newline} ) {
+            push @{ $self->{callbacks} }, \&_add_newline_callback;
         }
-    );
-
-    $self->{level_names}   = \@OrderedLevels;
-    $self->{level_numbers} = \%LevelNamesToNumbers;
-
-    $self->{name} = $p{name} || $self->_unique_name();
-
-    $self->{min_level} = $self->_level_as_number( $p{min_level} );
-    die "Invalid level specified for min_level"
-        unless defined $self->{min_level};
-
-    # Either use the parameter supplied or just the highest possible level.
-    $self->{max_level} = (
-        exists $p{max_level}
-        ? $self->_level_as_number( $p{max_level} )
-        : $#{ $self->{level_names} }
-    );
-
-    die "Invalid level specified for max_level"
-        unless defined $self->{max_level};
-
-    my @cb = $self->_get_callbacks(%p);
-    $self->{callbacks} = \@cb if @cb;
-
-    if ( $p{newline} ) {
-        push @{ $self->{callbacks} }, \&_add_newline_callback;
     }
 }
 
@@ -125,30 +141,37 @@ sub _level_as_number {
     my $level = shift;
 
     unless ( defined $level ) {
-        Carp::croak "undefined value provided for log level";
+        Carp::croak 'undefined value provided for log level';
     }
-
-    return $level if $level =~ /^\d$/;
 
     unless ( Log::Dispatch->level_is_valid($level) ) {
         Carp::croak "$level is not a valid Log::Dispatch log level";
     }
 
+    return $level if $level =~ /\A[0-7]+\z/;
+
     return $self->{level_numbers}{$level};
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _level_as_name {
     my $self  = shift;
     my $level = shift;
 
     unless ( defined $level ) {
-        Carp::croak "undefined value provided for log level";
+        Carp::croak 'undefined value provided for log level';
     }
 
-    return $level unless $level =~ /^\d$/;
+    my $canonical_level;
+    unless ( $canonical_level = Log::Dispatch->level_is_valid($level) ) {
+        Carp::croak "$level is not a valid Log::Dispatch log level";
+    }
+
+    return $canonical_level unless $level =~ /\A[0-7]+\z/;
 
     return $self->{level_names}[$level];
 }
+## use critic
 
 my $_unique_name_counter = 0;
 
@@ -181,7 +204,7 @@ Log::Dispatch::Output - Base class for all Log::Dispatch::* objects
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -299,10 +322,13 @@ method that you write. B<Do not override C<log>!>.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -310,10 +336,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

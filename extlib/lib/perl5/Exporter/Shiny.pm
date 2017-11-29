@@ -7,7 +7,7 @@ use warnings;
 use Exporter::Tiny ();
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.042';
+our $VERSION   = '1.000000';
 
 sub import {
 	my $me     = shift;
@@ -90,7 +90,12 @@ L<http://rt.cpan.org/Dist/Display.html?Queue=Exporter-Tiny>.
 
 =head1 SEE ALSO
 
-L<Exporter::Tiny>.
+This module is just a wrapper around L<Exporter::Tiny>, so take a look
+at L<Exporter::Tiny::Manual::QuickStart> and
+L<Exporter::Tiny::Manual::Exporting> for further information on what
+features are available.
+
+Other interesting exporters: L<Sub::Exporter>, L<Exporter>.
 
 =head1 AUTHOR
 
@@ -98,7 +103,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014 by Toby Inkster.
+This software is copyright (c) 2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

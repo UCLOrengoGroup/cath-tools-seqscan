@@ -1,18 +1,49 @@
 package Sub::Defer;
-
-use Moo::_strictures;
+use strict;
+use warnings;
 use Exporter qw(import);
-use Moo::_Utils qw(_getglob _install_coderef);
 use Scalar::Util qw(weaken);
 use Carp qw(croak);
 
-our $VERSION = '2.002004';
+our $VERSION = '2.004000';
 $VERSION = eval $VERSION;
 
 our @EXPORT = qw(defer_sub undefer_sub undefer_all);
 our @EXPORT_OK = qw(undefer_package defer_info);
 
 our %DEFERRED;
+
+sub _getglob { no strict 'refs'; \*{$_[0]} }
+
+BEGIN {
+  my $no_subname;
+  *_subname
+    = defined &Sub::Util::set_subname ? \&Sub::Util::set_subname
+    : defined &Sub::Name::subname     ? \&Sub::Name::subname
+    : (eval { require Sub::Util } && defined &Sub::Util::set_subname) ? \&Sub::Util::set_subname
+    : (eval { require Sub::Name } && defined &Sub::Name::subname    ) ? \&Sub::Name::subname
+    : ($no_subname = 1, sub { $_[1] });
+  *_CAN_SUBNAME = $no_subname ? sub(){0} : sub(){1};
+}
+
+sub _name_coderef {
+  shift if @_ > 2; # three args is (target, name, sub)
+  _CAN_SUBNAME ? _subname(@_) : $_[1];
+}
+
+sub _install_coderef {
+  my ($glob, $code) = (_getglob($_[0]), _name_coderef(@_));
+  no warnings 'redefine';
+  if (*{$glob}{CODE}) {
+    *{$glob} = $code;
+  }
+  # perl will sometimes warn about mismatched prototypes coming from the
+  # inheritance cache, so disable them if we aren't redefining a sub
+  else {
+    no warnings 'prototype';
+    *{$glob} = $code;
+  }
+}
 
 sub undefer_sub {
   my ($deferred) = @_;
@@ -68,14 +99,18 @@ sub defer_sub {
     if $target;
   $package ||= $options && $options->{package} || caller;
   my @attributes = @{$options && $options->{attributes} || []};
+  if (@attributes) {
+    /\A\w+(?:\(.*\))?\z/s || croak "invalid attribute $_"
+      for @attributes;
+  }
   my $deferred;
   my $undeferred;
   my $deferred_info = [ $target, $maker, \$undeferred ];
-  if (@attributes || $target && !Moo::_Utils::_CAN_SUBNAME) {
+  if (@attributes || $target && !_CAN_SUBNAME) {
     my $code
       =  q[#line ].(__LINE__+2).q[ "].__FILE__.qq["\n]
       . qq[package $package;\n]
-      . ($target ? "sub $subname" : '+sub') . join(' ', map ":$_", @attributes)
+      . ($target ? "sub $subname" : '+sub') . join('', map " :$_", @attributes)
       . q[ {
         package Sub::Defer;
         # uncoverable subroutine
@@ -120,7 +155,7 @@ __END__
 
 =head1 NAME
 
-Sub::Defer - defer generation of subroutines until they are first called
+Sub::Defer - Defer generation of subroutines until they are first called
 
 =head1 SYNOPSIS
 
@@ -189,14 +224,14 @@ Not exported by default.
 
 =head1 SUPPORT
 
-See L<Moo> for support and contact information.
+See L<Sub::Quote> for support and contact information.
 
 =head1 AUTHORS
 
-See L<Moo> for authors.
+See L<Sub::Quote> for authors.
 
 =head1 COPYRIGHT AND LICENSE
 
-See L<Moo> for the copyright and license.
+See L<Sub::Quote> for the copyright and license.
 
 =cut

@@ -3,79 +3,80 @@ package Log::Dispatch::Syslog;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use Log::Dispatch::Output;
+use Log::Dispatch::Types;
+use Params::ValidationCompiler qw( validation_for );
+use Scalar::Util qw( reftype );
+use Sys::Syslog 0.28 ();
+use Try::Tiny;
 
 use base qw( Log::Dispatch::Output );
 
-use Params::Validate qw(validate ARRAYREF BOOLEAN HASHREF SCALAR);
-Params::Validate::validation_options( allow_extra => 1 );
-
-use Scalar::Util qw( reftype );
-use Sys::Syslog 0.28 ();
-
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
-
-    my %p = @_;
-
-    my $self = bless {}, $class;
-
-    $self->_basic_init(%p);
-    $self->_init(%p);
-
-    return $self;
-}
-
-my ($Ident) = $0 =~ /(.+)/;
-
 my $thread_lock;
-my $threads_loaded;
 
-sub _init {
-    my $self = shift;
+{
+    my ($DefaultIdent) = $0 =~ /(.+)/;
 
-    my %p = validate(
-        @_, {
+    my $validator = validation_for(
+        params => {
             ident => {
-                type    => SCALAR,
-                default => $Ident
+
+                # It's weird to allow an empty string but that's how this
+                # worked pre-PVC.
+                type    => t('Str'),
+                default => $DefaultIdent
             },
             logopt => {
-                type    => SCALAR,
-                default => ''
+                type    => t('Str'),
+                default => q{},
             },
             facility => {
-                type    => SCALAR,
+                type    => t('NonEmptyStr'),
                 default => 'user'
             },
             socket => {
-                type    => SCALAR | ARRAYREF | HASHREF,
-                default => undef
+                type    => t('SyslogSocket'),
+                default => undef,
             },
             lock => {
-                type    => BOOLEAN,
+                type    => t('Bool'),
                 default => 0,
             },
-        }
+        },
+        slurpy => 1,
     );
 
-    $self->{$_} = $p{$_} for qw( ident logopt facility socket lock );
-    if ( $self->{lock} ) {
+    my $threads_loaded;
 
-        unless ($threads_loaded) {
-            local ( $@, $SIG{__DIE__} );
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
 
-            # These need to be loaded with use, not require.
-            eval 'use threads; use threads::shared';
-            $threads_loaded = 1;
+        my $self = bless { map { $_ => delete $p{$_} }
+                qw( ident logopt facility socket lock ) },
+            $class;
+
+        if ( $self->{lock} ) {
+            unless ($threads_loaded) {
+                local ( $@, $SIG{__DIE__} ) = ( undef, undef );
+
+                ## no critic (BuiltinFunctions::ProhibitStringyEval)
+                # These need to be loaded with use, not require.
+                die $@ unless eval 'use threads; use threads::shared; 1;';
+                $threads_loaded = 1;
+            }
+            &threads::shared::share( \$thread_lock );
         }
-        &threads::shared::share( \$thread_lock );
-    }
 
-    $self->{priorities} = [
+        $self->_basic_init(%p);
+
+        return $self;
+    }
+}
+
+{
+    my @priorities = (
         'DEBUG',
         'INFO',
         'NOTICE',
@@ -83,38 +84,41 @@ sub _init {
         'ERR',
         'CRIT',
         'ALERT',
-        'EMERG'
-    ];
-}
+        'EMERG',
+    );
 
-sub log_message {
-    my $self = shift;
-    my %p    = @_;
+    sub log_message {
+        my $self = shift;
+        my %p    = @_;
 
-    my $pri = $self->_level_as_number( $p{level} );
+        my $pri = $self->_level_as_number( $p{level} );
 
-    lock($thread_lock) if $self->{lock};
+        lock($thread_lock) if $self->{lock};
 
-    local ( $@, $SIG{__DIE__} );
-    eval {
-        if ( defined $self->{socket} ) {
-            Sys::Syslog::setlogsock(
-                ref $self->{socket} && reftype( $self->{socket} ) eq 'ARRAY'
-                ? @{ $self->{socket} }
-                : $self->{socket}
+        return
+            if try {
+            if ( defined $self->{socket} ) {
+                Sys::Syslog::setlogsock(
+                    ref $self->{socket}
+                        && reftype( $self->{socket} ) eq 'ARRAY'
+                    ? @{ $self->{socket} }
+                    : $self->{socket}
+                );
+            }
+
+            Sys::Syslog::openlog(
+                $self->{ident},
+                $self->{logopt},
+                $self->{facility}
             );
-        }
+            Sys::Syslog::syslog( $priorities[$pri], $p{message} );
+            Sys::Syslog::closelog();
 
-        Sys::Syslog::openlog(
-            $self->{ident},
-            $self->{logopt},
-            $self->{facility}
-        );
-        Sys::Syslog::syslog( $self->{priorities}[$pri], $p{message} );
-        Sys::Syslog::closelog;
-    };
+            1;
+            };
 
-    warn $@ if $@ and $^W;
+        warn $@ if $@ and $^W;
+    }
 }
 
 1;
@@ -133,7 +137,7 @@ Log::Dispatch::Syslog - Object for logging to system log.
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -218,10 +222,13 @@ This defaults to false.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -229,10 +236,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

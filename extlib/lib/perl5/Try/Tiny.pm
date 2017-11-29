@@ -1,8 +1,8 @@
-package Try::Tiny; # git description: v0.26-7-g2ae317a
+package Try::Tiny; # git description: v0.27-8-g8dc27c7
 use 5.006;
-# ABSTRACT: minimal try/catch with proper preservation of $@
+# ABSTRACT: Minimal try/catch with proper preservation of $@
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 use strict;
 use warnings;
@@ -204,11 +204,11 @@ __END__
 
 =head1 NAME
 
-Try::Tiny - minimal try/catch with proper preservation of $@
+Try::Tiny - Minimal try/catch with proper preservation of $@
 
 =head1 VERSION
 
-version 0.27
+version 0.28
 
 =head1 SYNOPSIS
 
@@ -699,7 +699,7 @@ Jesse Luehrs <doy@tozt.net>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge Peter Rabbitson Ricardo Signes Mark Fowler Graham Knop Lukas Mai Dagfinn Ilmari Mannsåker Rudolf Leermakers anaxagoras awalker chromatic Alex cm-perl Andrew Yates David Lowe Glenn Hans Dieter Pearcey Jonathan Yu Marc Mims Stosberg Paul Howarth
+=for stopwords Karen Etheridge Peter Rabbitson Ricardo Signes Mark Fowler Graham Knop Lukas Mai Dagfinn Ilmari Mannsåker Paul Howarth Rudolf Leermakers anaxagoras awalker chromatic Alex cm-perl Andrew Yates David Lowe Glenn Hans Dieter Pearcey Jonathan Yu Marc Mims Stosberg Pali
 
 =over 4
 
@@ -730,6 +730,10 @@ Lukas Mai <l.mai@web.de>
 =item *
 
 Dagfinn Ilmari Mannsåker <ilmari@ilmari.org>
+
+=item *
+
+Paul Howarth <paul@city-fan.org>
 
 =item *
 
@@ -785,7 +789,7 @@ Mark Stosberg <mark@stosberg.com>
 
 =item *
 
-Paul Howarth <paul@city-fan.org>
+Pali <pali@cpan.org>
 
 =back
 

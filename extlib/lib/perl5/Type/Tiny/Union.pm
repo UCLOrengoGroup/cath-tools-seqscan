@@ -6,7 +6,7 @@ use warnings;
 
 BEGIN {
 	$Type::Tiny::Union::AUTHORITY = 'cpan:TOBYINK';
-	$Type::Tiny::Union::VERSION   = '1.000005';
+	$Type::Tiny::Union::VERSION   = '1.002001';
 }
 
 use Scalar::Util qw< blessed >;
@@ -187,6 +187,75 @@ sub validate_explain
 	];
 }
 
+sub equals
+{
+	my ($self, $other) = Type::Tiny::_loose_to_TypeTiny(@_);
+	return unless blessed($self)  && $self->isa("Type::Tiny");
+	return unless blessed($other) && $other->isa("Type::Tiny");
+	
+	return !!1 if $self->SUPER::equals($other);
+	return !!0 unless $other->isa(__PACKAGE__);
+	
+	my @self_constraints  = @{ $self->type_constraints };
+	my @other_constraints = @{ $other->type_constraints };
+	
+	return !!0 unless @self_constraints == @other_constraints;
+	
+	constraint: foreach my $constraint ( @self_constraints ) {
+		for ( my $i = 0; $i < @other_constraints; $i++ ) {
+			if ( $constraint->equals($other_constraints[$i]) ) {
+				splice @other_constraints, $i, 1;
+				next constraint;
+			}
+		}
+	}
+	
+	@other_constraints == 0;
+}
+
+sub is_a_type_of
+{
+	my ($self, $other) = Type::Tiny::_loose_to_TypeTiny(@_);
+	return unless blessed($self)  && $self->isa("Type::Tiny");
+	return unless blessed($other) && $other->isa("Type::Tiny");
+	
+	return !!1 if $self->SUPER::is_a_type_of($other);
+	
+	for my $tc (@{ $self->type_constraints }) {
+		return !!0 unless $tc->is_a_type_of($other);
+	}
+	return !!1;
+}
+
+sub is_subtype_of
+{
+	my ($self, $other) = Type::Tiny::_loose_to_TypeTiny(@_);
+	return unless blessed($self)  && $self->isa("Type::Tiny");
+	return unless blessed($other) && $other->isa("Type::Tiny");
+	
+	return !!1 if $self->SUPER::is_subtype_of($other);
+	
+	for my $tc (@{ $self->type_constraints }) {
+		return !!0 unless $tc->is_subtype_of($other);
+	}
+	return !!1;
+}
+
+sub is_supertype_of
+{
+	my ($self, $other) = Type::Tiny::_loose_to_TypeTiny(@_);
+	return unless blessed($self)  && $self->isa("Type::Tiny");
+	return unless blessed($other) && $other->isa("Type::Tiny");
+	
+	return !!1 if $self->SUPER::is_supertype_of($other);
+	
+	for my $tc (@{ $self->type_constraints }) {
+		return !!1 if $tc->equals($other);
+		return !!1 if $tc->is_supertype_of($other);
+	}
+	return !!0;
+}
+
 1;
 
 __END__
@@ -284,7 +353,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013-2014 by Toby Inkster.
+This software is copyright (c) 2013-2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

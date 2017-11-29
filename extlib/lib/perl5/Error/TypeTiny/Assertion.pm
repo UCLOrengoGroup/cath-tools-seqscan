@@ -10,7 +10,7 @@ BEGIN {
 
 BEGIN {
 	$Error::TypeTiny::Assertion::AUTHORITY = 'cpan:TOBYINK';
-	$Error::TypeTiny::Assertion::VERSION   = '1.000005';
+	$Error::TypeTiny::Assertion::VERSION   = '1.002001';
 }
 
 require Error::TypeTiny;
@@ -76,7 +76,7 @@ sub _build_message
 	$msg .= sprintf(" at %s line %s", $c->{file}||'file?', $c->{line}||'NaN') if $c;
 	
 	my $explain = $e->explain;
-	return $msg unless @{ $explain || [] };
+	return "$msg\n" unless @{ $explain || [] };
 	
 	$msg .= "\n";
 	for my $line (@$explain) {
@@ -187,7 +187,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013-2014 by Toby Inkster.
+This software is copyright (c) 2013-2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

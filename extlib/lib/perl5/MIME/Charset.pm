@@ -132,7 +132,7 @@ if (USE_ENCODE) {
     }
 }
 
-$VERSION = '1.012';
+$VERSION = '1.012.2';
 
 ######## Private Attributes ########
 
@@ -345,6 +345,8 @@ $Config = {
     Mapping =>         'EXTENDED',
     Replacement =>     'DEFAULT',
 };
+local @INC = @INC;
+pop @INC if $INC[-1] eq '.';
 eval { require MIME::Charset::Defaults; };
 
 ######## Private Constants ########
@@ -1292,7 +1294,7 @@ Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006-2013 Hatuka*nezumi - IKEDA Soji.
+Copyright (C) 2006-2017 Hatuka*nezumi - IKEDA Soji.
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 

@@ -8,7 +8,6 @@ use Sub::Quote qw(quote_sub quoted_from_sub quotify sanitize_identifier);
 use Scalar::Util 'blessed';
 use Carp qw(croak);
 BEGIN { our @CARP_NOT = qw(Moo::_Utils) }
-use overload ();
 BEGIN {
   *_CAN_WEAKEN_READONLY = (
     "$]" < 5.008_003 or $ENV{MOO_TEST_PRE_583}
@@ -185,24 +184,26 @@ sub generate_method {
         exists_predicates => $into, $pred, $name, $spec
       );
     } else {
+      $self->{captures} = {};
       $methods{$pred} =
         quote_sub "${into}::${pred}"
           => $self->_generate_simple_has('$_[0]', $name, $spec)."\n"
-          => {}
+          => delete $self->{captures}
           => $quote_opts
         ;
     }
   }
-  if (my $pred = $spec->{builder_sub}) {
-    _install_coderef( "${into}::$spec->{builder}" => $spec->{builder_sub} );
+  if (my $builder = delete $spec->{builder_sub}) {
+    _install_coderef( "${into}::$spec->{builder}" => $builder );
   }
   if (my $cl = $spec->{clearer}) {
     _die_overwrite($into, $cl, 'a clearer')
       if !$spec->{allow_overwrite} && defined &{"${into}::${cl}"};
+    $self->{captures} = {};
     $methods{$cl} =
       quote_sub "${into}::${cl}"
         => $self->_generate_simple_clear('$_[0]', $name, $spec)."\n"
-        => {}
+        => delete $self->{captures}
         => $quote_opts
       ;
   }
@@ -247,6 +248,28 @@ sub generate_method {
       ;
   }
   \%methods;
+}
+
+sub merge_specs {
+  my ($self, @specs) = @_;
+  my $spec = shift @specs;
+  for my $old_spec (@specs) {
+    foreach my $key (keys %$old_spec) {
+      if ($key eq 'handles') {
+      }
+      elsif ($key eq 'moosify') {
+        $spec->{$key} = [
+          map { ref $_ eq 'ARRAY' ? @$_ : $_ }
+          grep defined,
+          ($old_spec->{$key}, $spec->{$key})
+        ];
+      }
+      elsif (!exists $spec->{$key}) {
+        $spec->{$key} = $old_spec->{$key};
+      }
+    }
+  }
+  $spec;
 }
 
 sub is_simple_attribute {
@@ -548,10 +571,10 @@ sub _generate_populate_set {
     $spec->{trigger}
   ) : undef;
   if ($has_default) {
-    "($set)," . ($trigger ? "($test and $trigger)," : '')
+    "($set)," . ($trigger && $test ? "($test and $trigger)," : '') . "\n";
   }
   else {
-    "($test and ($set)" . ($trigger ? ", ($trigger)" : '') . "),";
+    "($test and ($set)" . ($trigger ? ", ($trigger)" : '') . "),\n";
   }
 }
 
@@ -610,11 +633,11 @@ sub _generate_getset {
 
 sub _generate_asserter {
   my ($self, $name, $spec) = @_;
-
+  my $name_str = quotify($name);
   "do {\n"
    ."  my \$val = ".$self->_generate_get($name, $spec).";\n"
    ."  ".$self->_generate_simple_has('$_[0]', $name, $spec)."\n"
-   ."    or Carp::croak(\"Attempted to access '${name}' but it is not set\");\n"
+   ."    or Carp::croak(q{Attempted to access '}.${name_str}.q{' but it is not set});\n"
    ."  \$val;\n"
    ."}\n";
 }
@@ -647,19 +670,29 @@ sub default_construction_string { '{}' }
 
 sub _validate_codulatable {
   my ($self, $setting, $value, $into, $appended) = @_;
-  my $invalid = "Invalid $setting '" . overload::StrVal($value)
-    . "' for $into not a coderef";
-  $invalid .= " $appended" if $appended;
 
-  unless (ref $value and (ref $value eq 'CODE' or blessed($value))) {
-    croak "$invalid or code-convertible object";
+  my $error;
+
+  if (blessed $value) {
+    local $@;
+    no warnings 'void';
+    eval { \&$value; 1 }
+      and return 1;
+    $error = "could not be converted to a coderef: $@";
+  }
+  elsif (ref $value eq 'CODE') {
+    defined &$value
+      and return 1;
+    $error = 'is a stub';
+  }
+  else {
+    $error = 'is not a coderef or code-convertible object';
   }
 
-  unless (eval { \&$value }) {
-    croak "$invalid and could not be converted to a coderef: $@";
-  }
-
-  1;
+  croak "Invalid $setting '"
+    . ($INC{'overload.pm'} ? overload::StrVal($value) : $value)
+    . "' for $into" . $error
+    . ($appended ? " $appended" : '');
 }
 
 1;

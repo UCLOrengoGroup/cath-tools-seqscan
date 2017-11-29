@@ -6,7 +6,7 @@ use warnings;
 
 BEGIN {
 	$Types::Standard::Dict::AUTHORITY = 'cpan:TOBYINK';
-	$Types::Standard::Dict::VERSION   = '1.000005';
+	$Types::Standard::Dict::VERSION   = '1.002001';
 }
 
 use Types::Standard ();
@@ -93,7 +93,7 @@ sub __inline_generator
 		require B;
 		my $h = $_[1];
 		join " and ",
-			"ref($h) eq 'HASH'",
+			Types::Standard::HashRef->inline_check($h),
 			( $slurpy_is_any ? ()
 			: $slurpy_is_map ? do {
 				'(not grep {'
@@ -180,15 +180,19 @@ sub __coercion_generator
 	my $C = "Type::Coercion"->new(type_constraint => $child);
 	
 	my $all_inlinable = 1;
+	my $child_coercions_exist = 0;
 	for my $tc (values %dict)
 	{
 		$all_inlinable = 0 if !$tc->can_be_inlined;
 		$all_inlinable = 0 if $tc->has_coercion && !$tc->coercion->can_be_inlined;
-		last if!$all_inlinable;
+		$child_coercions_exist++ if $tc->has_coercion;
 	}
 	$all_inlinable = 0 if $slurpy && !$slurpy->can_be_inlined;
 	$all_inlinable = 0 if $slurpy && $slurpy->has_coercion && !$slurpy->coercion->can_be_inlined;
-	
+
+	$child_coercions_exist++ if $slurpy && $slurpy->has_coercion;
+	return unless $child_coercions_exist;
+
 	if ($all_inlinable)
 	{
 		$C->add_type_coercions($parent => Types::Standard::Stringable {
@@ -226,7 +230,7 @@ sub __coercion_generator
 				my $K = B::perlstring($k);
 				
 				push @code, sprintf(
-					'if (exists $orig->{%s}) { $tmp = %s; (%s) ? ($new{%s}=$tmp) : ($return_orig=1 and last %s) }',
+					'if (exists $orig->{%s}) { $tmp = %s; (%s) ? ($new{%s}=$tmp) : (($return_orig=1), last %s) }',
 					$K,
 					$ct_coerce
 						? $ct->coercion->inline_coercion("\$orig->{$K}")
@@ -338,7 +342,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2013-2014 by Toby Inkster.
+This software is copyright (c) 2013-2014, 2017 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

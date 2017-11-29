@@ -3,27 +3,29 @@ package Log::Dispatch::Code;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use Log::Dispatch::Output;
+use Log::Dispatch::Types;
+use Params::ValidationCompiler qw( validation_for );
 
 use base qw( Log::Dispatch::Output );
 
-use Params::Validate qw(validate CODEREF);
-Params::Validate::validation_options( allow_extra => 1 );
+{
+    my $validator = validation_for(
+        params => { code => { type => t('CodeRef') } },
+        slurpy => 1,
+    );
 
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
+    sub new {
+        my $class = shift;
 
-    my %p = validate( @_, { code => CODEREF } );
+        my %p = $validator->(@_);
 
-    my $self = bless {}, $class;
+        my $self = bless { code => delete $p{code} }, $class;
+        $self->_basic_init(%p);
 
-    $self->_basic_init(%p);
-    $self->{code} = $p{code};
-
-    return $self;
+        return $self;
+    }
 }
 
 sub log_message {
@@ -51,7 +53,7 @@ Log::Dispatch::Code - Object for logging to a subroutine reference
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -111,10 +113,13 @@ The message being logged.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -122,10 +127,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

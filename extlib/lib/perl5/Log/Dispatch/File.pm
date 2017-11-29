@@ -3,129 +3,125 @@ package Log::Dispatch::File;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use Log::Dispatch::Output;
+use IO::Handle;
+use Log::Dispatch::Types;
+use Params::ValidationCompiler qw( validation_for );
+use Scalar::Util qw( openhandle );
 
 use base qw( Log::Dispatch::Output );
-
-use Params::Validate qw(validate SCALAR BOOLEAN);
-Params::Validate::validation_options( allow_extra => 1 );
-
-use Scalar::Util qw( openhandle );
 
 # Prevents death later on if IO::File can't export this constant.
 *O_APPEND = \&APPEND unless defined &O_APPEND;
 
 sub APPEND {0}
 
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
-
-    my %p = @_;
-
-    my $self = bless {}, $class;
-
-    $self->_basic_init(%p);
-    $self->_make_handle;
-
-    return $self;
-}
-
-sub _basic_init {
-    my $self = shift;
-
-    $self->SUPER::_basic_init(@_);
-
-    my %p = validate(
-        @_, {
-            filename => { type => SCALAR },
+{
+    my $validator = validation_for(
+        params => {
+            filename => { type => t('NonEmptyStr') },
             mode     => {
-                type    => SCALAR,
-                default => '>'
+                type    => t('Value'),
+                default => '>',
             },
             binmode => {
-                type    => SCALAR,
-                default => undef
+                type     => t('Str'),
+                optional => 1,
             },
             autoflush => {
-                type    => BOOLEAN,
-                default => 1
+                type    => t('Bool'),
+                default => 1,
             },
             close_after_write => {
-                type    => BOOLEAN,
-                default => 0
+                type    => t('Bool'),
+                default => 0,
+            },
+            lazy_open => {
+                type    => t('Bool'),
+                default => 0,
             },
             permissions => {
-                type     => SCALAR,
-                optional => 1
+                type     => t('PositiveOrZeroInt'),
+                optional => 1,
             },
             syswrite => {
-                type    => BOOLEAN,
-                default => 0
+                type    => t('Bool'),
+                default => 0,
             },
-        }
+        },
+        slurpy => 1,
     );
 
-    $self->{filename}    = $p{filename};
-    $self->{binmode}     = $p{binmode};
-    $self->{autoflush}   = $p{autoflush};
-    $self->{close}       = $p{close_after_write};
-    $self->{permissions} = $p{permissions};
-    $self->{syswrite}    = $p{syswrite};
+    # We stick these in $self as-is without looking at them in new().
+    my @self_p = qw(
+        autoflush
+        binmode
+        close_after_write
+        filename
+        lazy_open
+        permissions
+        syswrite
+    );
 
-    if ( $self->{close} ) {
-        $self->{mode} = '>>';
-    }
-    elsif (
-           exists $p{mode}
-        && defined $p{mode}
-        && (
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
+
+        my $self = bless { map { $_ => delete $p{$_} } @self_p }, $class;
+
+        if ( $self->{close_after_write} ) {
+            $self->{mode} = '>>';
+        }
+        elsif (
             $p{mode} =~ /^(?:>>|append)$/
             || (   $p{mode} =~ /^\d+$/
                 && $p{mode} == O_APPEND() )
-        )
-        ) {
-        $self->{mode} = '>>';
-    }
-    else {
-        $self->{mode} = '>';
-    }
-}
+            ) {
+            $self->{mode} = '>>';
+        }
+        else {
+            $self->{mode} = '>';
+        }
+        delete $p{mode};
 
-sub _make_handle {
-    my $self = shift;
+        $self->_basic_init(%p);
+        $self->_open_file()
+            unless $self->{close_after_write} || $self->{lazy_open};
 
-    $self->_open_file() unless $self->{close};
+        return $self;
+    }
 }
 
 sub _open_file {
     my $self = shift;
 
+    ## no critic (InputOutput::RequireBriefOpen)
     open my $fh, $self->{mode}, $self->{filename}
         or die "Cannot write to '$self->{filename}': $!";
 
     if ( $self->{autoflush} ) {
-        my $oldfh = select $fh;
-        $| = 1;
-        select $oldfh;
+        $fh->autoflush(1);
     }
 
     if ( $self->{permissions}
         && !$self->{chmodded} ) {
+        ## no critic (ValuesAndExpressions::ProhibitLeadingZeros)
         my $current_mode = ( stat $self->{filename} )[2] & 07777;
         if ( $current_mode ne $self->{permissions} ) {
             chmod $self->{permissions}, $self->{filename}
-                or die
-                "Cannot chmod $self->{filename} to $self->{permissions}: $!";
+                or die sprintf(
+                'Cannot chmod %s to %04o: %s',
+                $self->{filename}, $self->{permissions} & 07777, $!
+                );
         }
 
         $self->{chmodded} = 1;
     }
 
     if ( $self->{binmode} ) {
-        binmode $fh, $self->{binmode};
+        binmode $fh, $self->{binmode}
+            or die "Cannot set binmode on filehandle: $!";
     }
 
     $self->{fh} = $fh;
@@ -135,8 +131,12 @@ sub log_message {
     my $self = shift;
     my %p    = @_;
 
-    if ( $self->{close} ) {
+    if ( $self->{close_after_write} ) {
         $self->_open_file;
+    }
+    elsif ( $self->{lazy_open} ) {
+        $self->_open_file;
+        $self->{lazy_open} = 0;
     }
 
     my $fh = $self->{fh};
@@ -150,7 +150,7 @@ sub log_message {
             or die "Cannot write to '$self->{filename}': $!";
     }
 
-    if ( $self->{close} ) {
+    if ( $self->{close_after_write} ) {
         close $fh
             or die "Cannot close '$self->{filename}': $!";
         delete $self->{fh};
@@ -162,6 +162,7 @@ sub DESTROY {
 
     if ( $self->{fh} ) {
         my $fh = $self->{fh};
+        ## no critic (InputOutput::RequireCheckedSyscalls)
         close $fh if openhandle($fh);
     }
 }
@@ -182,7 +183,7 @@ Log::Dispatch::File - Object for logging to files
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -209,6 +210,11 @@ Log::Dispatch::* system.
 
 Note that a newline will I<not> be added automatically at the end of a message
 by default. To do that, pass C<< newline => 1 >>.
+
+B<NOTE:> If you are writing to a single log file from multiple processes, the
+log output may become interleaved and garbled. Use the
+L<Log::Dispatch::File::Locked> output instead, which allows multiple processes
+to safely share a single file.
 
 =for Pod::Coverage new log_message
 
@@ -240,6 +246,11 @@ defaults to false.
 
 If this is true, then the mode will always be append, so that the file is not
 re-written for each new message.
+
+=item * lazy_open ($)
+
+Whether or not the file should be opened only on first write. This defaults to
+false.
 
 =item * autoflush ($)
 
@@ -274,10 +285,13 @@ which is probably not what you want.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -285,10 +299,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

@@ -3,9 +3,9 @@ use strict;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.18';
+$VERSION = '0.20';
 
-use vars qw( %forbidden %fake_modules );
+use vars qw(%forbidden);
 
 sub get_forbidden_list {
   \%forbidden
@@ -17,8 +17,8 @@ sub import {
   my $forbidden = get_forbidden_list;
   
   for (@forbidden_modules) {
-      $forbidden->{$_} = $INC{ module2file($_) };
-      $fake_modules{module2file($_)} = [ "package $_;", "0;" ];
+      my $file = module2file($_);
+      $forbidden->{$file} = delete $INC{$file};
   };
 
   # Scrub %INC, so that loaded modules disappear
@@ -33,10 +33,9 @@ sub fake_module {
     my ($self,$module_file,$member_only) = @_;
     # Don't touch $@, or .al files will not load anymore????
 
-    # Deliver a faked, nonworking module
-    if (my $faked = $fake_modules{$module_file}) {
-      my @faked_module = @$faked;
-      return sub { defined ( $_ = shift @faked_module ) };
+    if (exists get_forbidden_list->{$module_file}) {
+      my $module_name = file2module($module_file);
+      croak "Can't locate $module_file in \@INC (you may need to install the $module_name module) (\@INC contains: @INC)";
     };
 };
 
@@ -46,10 +45,9 @@ sub unimport {
   my $forbidden = get_forbidden_list;
 
   for $module (@list) {
-    if (exists $forbidden->{$module}) {
-      my $file = module2file($module);
-      delete $fake_modules{$file};
-      my $path = delete $forbidden->{$module};
+    my $file = module2file($module);
+    if (exists $forbidden->{$file}) {
+      my $path = delete $forbidden->{$file};
       if (defined $path) {
         $INC{ $file } = $path;
       }
@@ -167,7 +165,7 @@ This module is released under the same terms as Perl itself.
 =head1 REPOSITORY
 
 The public repository of this module is
-L<http://github.com/Corion/test-without-module>.
+L<https://github.com/Corion/test-without-module>.
 
 =head1 SUPPORT
 

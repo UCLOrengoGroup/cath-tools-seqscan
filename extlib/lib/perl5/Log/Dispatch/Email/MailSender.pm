@@ -8,52 +8,66 @@ package Log::Dispatch::Email::MailSender;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
+our $VERSION = '2.67';
 
-use Log::Dispatch::Email;
+use Log::Dispatch::Types;
+use Mail::Sender ();
+use Params::ValidationCompiler qw( validation_for );
 
 use base qw( Log::Dispatch::Email );
 
-use Mail::Sender ();
+{
+    my $validator = validation_for(
+        params => {
+            smtp         => { default => 'localhost' },
+            port         => { default => 25 },
+            authid       => 0,
+            authpwd      => 0,
+            auth         => 0,
+            tls_required => 0,
+            replyto      => 0,
+            fake_from    => 0,
+        },
+        slurpy => 1,
+    );
 
-sub new {
-    my $proto = shift;
-    my $class = ref $proto || $proto;
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
 
-    my %p = @_;
+        my $smtp         = delete $p{smtp};
+        my $port         = delete $p{port};
+        my $authid       = delete $p{authid};
+        my $authpwd      = delete $p{authpwd};
+        my $auth         = delete $p{auth};
+        my $tls_required = delete $p{tls_required};
+        my $replyto      = delete $p{replyto};
+        my $fake_from    = delete $p{fake_from};
 
-    my $smtp = delete $p{smtp} || 'localhost';
-    my $port = delete $p{port} || '25';
+        my $self = $class->SUPER::new(%p);
 
-    my $authid       = delete $p{authid};
-    my $authpwd      = delete $p{authpwd};
-    my $auth         = delete $p{auth};
-    my $tls_required = delete $p{tls_required};
-    my $replyto      = delete $p{replyto};
-    my $fake_from    = delete $p{fake_from};
+        $self->{smtp} = $smtp;
+        $self->{port} = $port;
 
-    my $self = $class->SUPER::new(%p);
+        $self->{authid}       = $authid;
+        $self->{authpwd}      = $authpwd;
+        $self->{auth}         = $auth;
+        $self->{tls_required} = $tls_required;
 
-    $self->{smtp} = $smtp;
-    $self->{port} = $port;
+        $self->{fake_from} = $fake_from;
+        $self->{replyto}   = $replyto;
 
-    $self->{authid}       = $authid;
-    $self->{authpwd}      = $authpwd;
-    $self->{auth}         = $auth;
-    $self->{tls_required} = $tls_required;
-
-    $self->{fake_from} = $fake_from;
-    $self->{replyto}   = $replyto;
-
-    return $self;
+        return $self;
+    }
 }
 
 sub send_email {
     my $self = shift;
     my %p    = @_;
 
-    local ( $?, $@, $SIG{__DIE__} );
-    eval {
+    local ( $?, $@, $SIG{__DIE__} ) = ( undef, undef, undef );
+    return
+        if eval {
         my $sender = Mail::Sender->new(
             {
                 from => $self->{from} || 'LogDispatch@foo.bar',
@@ -77,7 +91,9 @@ sub send_email {
 
         ref $sender->MailMsg( { msg => $p{message} } )
             or die "Error sending mail: $Mail::Sender::Error";
-    };
+
+        1;
+        };
 
     warn $@ if $@;
 }
@@ -98,7 +114,7 @@ Log::Dispatch::Email::MailSender - Subclass of Log::Dispatch::Email that uses th
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -172,10 +188,13 @@ The reply-to address.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -183,10 +202,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut

@@ -3,13 +3,11 @@ package Log::Dispatch::Email::MIMELite;
 use strict;
 use warnings;
 
-our $VERSION = '2.57';
-
-use Log::Dispatch::Email;
-
-use base qw( Log::Dispatch::Email );
+our $VERSION = '2.67';
 
 use MIME::Lite;
+
+use base qw( Log::Dispatch::Email );
 
 sub send_email {
     my $self = shift;
@@ -24,9 +22,9 @@ sub send_email {
 
     $mail{From} = $self->{from} if defined $self->{from};
 
-    local $?;
+    local $? = 0;
     unless ( MIME::Lite->new(%mail)->send ) {
-        warn "Error sending mail with MIME::Lite";
+        warn 'Error sending mail with MIME::Lite';
     }
 }
 
@@ -46,7 +44,7 @@ Log::Dispatch::Email::MIMELite - Subclass of Log::Dispatch::Email that uses the 
 
 =head1 VERSION
 
-version 2.57
+version 2.67
 
 =head1 SYNOPSIS
 
@@ -72,10 +70,13 @@ send_email method using the L<MIME::Lite> module.
 
 =head1 SUPPORT
 
-Bugs may be submitted through L<the RT bug tracker|http://rt.cpan.org/Public/Dist/Display.html?Name=Log-Dispatch>
-(or L<bug-log-dispatch@rt.cpan.org|mailto:bug-log-dispatch@rt.cpan.org>).
+Bugs may be submitted at L<https://github.com/houseabsolute/Log-Dispatch/issues>.
 
-I am also usually active on IRC as 'drolsky' on C<irc://irc.perl.org>.
+I am also usually active on IRC as 'autarch' on C<irc://irc.perl.org>.
+
+=head1 SOURCE
+
+The source code repository for Log-Dispatch can be found at L<https://github.com/houseabsolute/Log-Dispatch>.
 
 =head1 AUTHOR
 
@@ -83,10 +84,13 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2016 by Dave Rolsky.
+This software is Copyright (c) 2017 by Dave Rolsky.
 
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+F<LICENSE> file included with this distribution.
 
 =cut
