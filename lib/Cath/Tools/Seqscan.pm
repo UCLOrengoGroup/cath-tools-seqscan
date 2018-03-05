@@ -21,39 +21,20 @@ Cath::Tools::Seqscan - scan sequence against funfams in CATH
 
 use Moo;
 use MooX::Options;
-use JSON::MaybeXS;
 use Path::Tiny;
-use HTTP::Tiny;
 use Try::Tiny;
-use Log::Dispatch;
 use Data::Dumper;
 use URI;
 use IO::String;
 use Carp qw/ confess /;
-
 use Cath::Tools::Types qw/ is_CathDomainID /;
 
-my $log = Log::Dispatch->new(
-  outputs => [
-    [ 'Screen', min_level => 'debug' ]
-  ],
-);
-
-# use these headers unless explictly state otherwise
-my %DEFAULT_HEADERS = (
-  'Content-Type' => 'application/json',
-  'Content-Accept' => 'application/json',
-);
+with qw/
+  Cath::Tools::Logger
+  Cath::Tools::HasApiClient
+/;
 
 my $QUEUE_NAME_PREFIX = 'hmmscan_';
-
-has 'client' => ( is => 'ro', lazy => 1, builder => '_build_client' );
-has 'json'   => ( is => 'ro', default => sub { JSON::MaybeXS->new() } );
-
-sub _build_client {
-  my $self = shift;
-  my $http = HTTP::Tiny->new();
-}
 
 option 'host' => (
   doc => 'Host to use for API requests',
@@ -106,6 +87,8 @@ sub run {
   my $dir_out       = path( $self->out );
   my $max_aln_count = $self->max_aln;
   my $max_hit_count = $self->max_hits;
+
+  my $log = $self->_logger;
 
   my $host          = $self->host;
 
@@ -184,44 +167,6 @@ sub run {
   }
 
   return 1;
-}
-
-sub POST {
-  my ($self, $url, $body, $headers) = @_;
-
-  $headers ||= {};
-  $headers = { %DEFAULT_HEADERS, %$headers };
-
-  my $client = $self->client;
-
-  $log->info( sprintf "%-6s %-70s", "POST", $url );
-  my $response = $client->post( $url, { content => $body, headers => $headers } );
-  $log->info( sprintf " %d\n", $response->{status} );
-
-  if ( ! $response->{success} ) {
-    $log->info( "ERROR: response: " . $response->{content} . "\n" );
-    die "! Error: expected response code 20*";
-  }
-
-  return $response->{content};
-}
-
-sub GET {
-  my ($self, $url, $headers) = @_;
-
-  $headers ||= {};
-  $headers = { %DEFAULT_HEADERS, %$headers };
-
-  my $client = $self->client;
-
-  $log->info( sprintf "%-6s %-70s", "GET", $url );
-  my $response = $client->get( $url, { headers => $headers } );
-  $log->info( sprintf " %d\n", $response->{status} );
-
-  die "! Error: expected response code 20*"
-    unless $response->{success};
-
-  return $response->{content};
 }
 
 1;
