@@ -62,18 +62,35 @@ option 'out' => (
   default => sub { path('.') }
 );
 
+option 'out_format' => (
+  doc => 'Output format (STO | [AFA])',
+  format => 's',
+  is => 'ro',
+  default => 'AFA',
+  short => 'format',
+);
+
+my %OUTPUT_FORMATTERS = (
+  'AFA' => sub { my $text = shift; $text =~ s{^\#.*?$}{}xsmg; $text =~ s{^//.*?$}{}xsmg; $text =~ s{^\s*$}{}xmsg; return $text },
+  'STO' => sub { },
+);
+
 sub run {
   my $self = shift;
 
   my $dir_out = path( $self->out );
 
   is_CathSuperfamilyID( $self->sfam_id )
-    or $self->options_usage( sprintf "Error: '%s' does not look like a valid CATH superfamily ID", $self->sfam_id );
+    or $self->options_usage( 1, sprintf "Error: '%s' does not look like a valid CATH superfamily ID", $self->sfam_id );
 
   my $sfam_id = $self->sfam_id;
 
   my $cath_version = to_CathVersion( $self->version )
-    or $self->options_usage( sprintf "Error: '%s' does not look like a valid CATH version", $self->version );
+    or $self->options_usage( 2, sprintf "Error: '%s' does not look like a valid CATH version", $self->version );
+
+  my $out_format = uc( $self->out_format );
+  my $out_formatter = $OUTPUT_FORMATTERS{ $out_format }
+    or $self->options_usage( 3, sprintf "Error: '%s' does not look like a valid FORMAT", $out_format );
 
   my $log = $self->_logger;
   my $json = $self->json;
@@ -112,13 +129,18 @@ sub run {
       $funfam_datum->{name} || '-'
     );
 
+    # http://www.cathdb.info/version/v4_2_0/api/rest/superfamily/1.10.8.10/funfam/15679/files/seed_alignment
+
     my $funfam_url = sprintf( "%s/version/%s/api/rest/superfamily/%s/funfam/%d/files/seed_alignment",
       $host, $cath_version->to_api_dir, $sfam_id, $funfam_number );
 
     my $funfam_content = $self->GET( $funfam_url );
-    my $out_sto_file = $dir_out->child( "$funfam_id.sto" );
-    $log->info( "Writing STOCKHOLM alignment to $out_sto_file" );
-    $out_sto_file->spew( $funfam_content );
+
+    $funfam_content = $out_formatter->( $funfam_content );
+
+    my $out_file = $dir_out->child( sprintf "%s.%s", $funfam_id, lc($out_format) );
+    $log->info( sprintf "Writing sequences in %s format to %s", $out_format, $out_file );
+    $out_file->spew( $funfam_content );
   }
 
 }
