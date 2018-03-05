@@ -5,6 +5,7 @@ name 'Cath-Tools-Seqscan';
 
 all_from 'lib/Cath/Tools/Seqscan.pm';
 
+requires 'Getopt::Long' => '2.43';
 requires 'HTTP::Tiny' => '';
 requires 'IO::String';
 requires 'JSON::MaybeXS' => '';
