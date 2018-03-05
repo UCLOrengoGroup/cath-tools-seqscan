@@ -86,3 +86,91 @@ C<EXE_FILES: >
 
 =back
 
+=head2 Mon Mar  5 18:04:26 2018: C<Module> L<Capture::Tiny|Capture::Tiny>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.46>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Mar  5 18:04:28 2018: C<Module> L<Test::FailWarnings|Test::FailWarnings>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.008>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Mar  5 18:04:35 2018: C<Module> L<Log::Any|Log::Any>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.705>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Mon Mar  5 18:04:37 2018: C<Module> L<MooX::Role::Logger|MooX::Role::Logger>
+
+=over 4
+
+=item *
+
+C<installed into: /cath/homes2/ucbcisi/git/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.005>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
