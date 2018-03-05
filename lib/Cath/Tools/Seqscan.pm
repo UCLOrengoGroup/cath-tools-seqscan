@@ -80,7 +80,7 @@ option 'out' => (
   doc => 'Directory to output alignments (STOCKHOLM format)',
   format => 's',
   is => 'ro',
-  default => sub { path() }
+  default => sub { path('.') }
 );
 
 option 'max_hits' => (
