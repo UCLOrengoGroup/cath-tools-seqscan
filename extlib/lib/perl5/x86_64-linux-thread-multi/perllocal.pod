@@ -1,0 +1,44 @@
+=head2 Tue Mar  6 11:29:58 2018: C<Module> L<Unicode::LineBreak|Unicode::LineBreak>
+
+=over 4
+
+=item *
+
+C<installed into: /nfs/nobackup/thornton/pdbsum/run1/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2017.004>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Tue Mar  6 11:31:07 2018: C<Module> L<List::Util|List::Util>
+
+=over 4
+
+=item *
+
+C<installed into: /nfs/nobackup/thornton/pdbsum/run1/cath-tools-seqscan/extlib/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.50>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
