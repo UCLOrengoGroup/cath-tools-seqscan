@@ -2,18 +2,18 @@ package Cath::Tools::Api::Funfam;
 
 =head1 NAME
 
-Cath::Tools::Api::funfam - fetch CATH FunFams from API
+Cath::Tools::Api::Funfam - fetch CATH FunFams from API
 
 =head1 SYNOPSIS
 
   # take params from the command line
   $app = Cath::Tools::Api::Funfam->new_with_options()
 
-  # create from code
+  # OR create from code
   $app = Cath::Tools::Api::Funfam->new(
     version => '4.2',
     sfam_id => '1.10.8.10',
-    out_dir => './output',
+    out     => './output',
   );
 
   $app->run;
@@ -21,7 +21,22 @@ Cath::Tools::Api::funfam - fetch CATH FunFams from API
 =cut
 
 use Moo;
-use MooX::Options;
+use MooX::Options synopsis => <<"SYNOPSIS";
+
+Retrieve CATH Functional Family (FunFam) alignments via the CATH API.
+
+Example usage:
+
+  $0 --sfam_id 1.10.8.10 --out ./data
+
+Lists all CATH FunFams for the given superfamily; outputs aligned sequences
+in the directory C<./data> (one file per FunFam).
+
+  $0 --sfam_id 1.10.8.10 --out ./data --format STO
+
+Outputs the sequences in STOCKHOLM format.
+
+SYNOPSIS
 use Try::Tiny;
 use Path::Tiny;
 use Data::Dumper;
@@ -56,23 +71,22 @@ option 'sfam_id' => (
 );
 
 option 'out' => (
-  doc => 'Directory to output alignments',
+  doc => 'Directory to output alignments (default: ./)',
   format => 's',
   is => 'ro',
   default => sub { path('.') }
 );
 
-option 'out_format' => (
-  doc => 'Output format (STO | [AFA])',
+option 'format' => (
+  doc => 'Output format [STO, AFA] (default: AFA)',
   format => 's',
   is => 'ro',
   default => 'AFA',
-  short => 'format',
 );
 
 my %OUTPUT_FORMATTERS = (
   'AFA' => sub { my $text = shift; $text =~ s{^\#.*?$}{}xsmg; $text =~ s{^//.*?$}{}xsmg; $text =~ s{^\s*$}{}xmsg; return $text },
-  'STO' => sub { },
+  'STO' => sub { my $text = shift; return $text },
 );
 
 sub run {
@@ -88,7 +102,7 @@ sub run {
   my $cath_version = to_CathVersion( $self->version )
     or $self->options_usage( 2, sprintf "Error: '%s' does not look like a valid CATH version", $self->version );
 
-  my $out_format = uc( $self->out_format );
+  my $out_format = uc( $self->format );
   my $out_formatter = $OUTPUT_FORMATTERS{ $out_format }
     or $self->options_usage( 3, sprintf "Error: '%s' does not look like a valid FORMAT", $out_format );
 
@@ -122,7 +136,7 @@ sub run {
     my $funfam_number = $funfam_datum->{funfam_number};
     my $funfam_id = sprintf( "%s-%s-%s", $funfam_datum->{superfamily_id}, 'FF', $funfam_number );
 
-    printf( "%-25s %-10s %-12s %s\n",
+    printf( "FUNFAM: %-25s %-10s %-12s %s\n",
       $funfam_id,
       $funfam_datum->{rep_source_id},
       $funfam_datum->{rep_id},
