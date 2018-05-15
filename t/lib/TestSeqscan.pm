@@ -12,6 +12,8 @@ use Bio::SeqIO;
 
 use Cath::Tools::Seqscan;
 
+my $CLEANUP = 1;
+
 has query_file => (
   is => 'ro',
   lazy => 1,
@@ -27,6 +29,12 @@ sub _build_query_file {
   return $expected_file;
 }
 
+has uniprot => (
+  is => 'ro',
+  lazy => 1,
+  predicate => 'has_uniprot',
+);
+
 has 'tmp_dir' => (
   is => 'ro',
   builder => '_build_tmp_dir',
@@ -39,7 +47,7 @@ sub out_dir {
 }
 
 sub _build_tmp_dir {
-  return tempdir( CLEANUP => 1 );
+  return tempdir( CLEANUP => $CLEANUP );
 }
 
 has 'max_aln' => (
@@ -57,7 +65,7 @@ has 'app' => (
 sub _build_app {
   my $self = shift;
   my $app = Cath::Tools::Seqscan->new(
-    in  => $self->query_file,
+    ( $self->has_uniprot ? ( uniprot => $self->uniprot ) : ( in => $self->query_file ) ),
     out => $self->tmp_dir,
     max_aln => $self->max_aln,
   );

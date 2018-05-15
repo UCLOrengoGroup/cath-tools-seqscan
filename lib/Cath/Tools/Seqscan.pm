@@ -43,11 +43,18 @@ option 'host' => (
   default => 'http://www.cathdb.info',
 );
 
+option 'uniprot' => (
+  doc => 'UniProtKB accession to use for sequence search',
+  format => 's',
+  is => 'ro',
+  predicate => 'has_uniprot_acc',
+);
+
 option 'in' => (
   doc => 'Query sequence to submit (FASTA file)',
   format => 's',
   is => 'ro',
-  required => 1,
+  predicate => 'has_input_file',
 );
 
 option 'queue' => (
@@ -81,7 +88,18 @@ option 'max_aln' => (
 sub run {
   my $self = shift;
 
-  my $query = path( $self->in )->slurp;
+  if ( $self->has_uniprot_acc && $self->has_input_file ) {
+    die "! Error: cannot specify both options: 'uniprot' and 'input'";
+  }
+
+  my $query;
+  if ( $self->has_uniprot_acc ) {
+    $query = $self->get_uniprot_fasta_sequence( $self->uniprot );
+  }
+  elsif ( $self->has_input_file ) {
+    $query = path( $self->in )->slurp;
+  }
+
 
   my $json          = $self->json;
   my $dir_out       = path( $self->out );
@@ -167,6 +185,17 @@ sub run {
   }
 
   return 1;
+}
+
+sub get_uniprot_fasta_sequence {
+  my $self = shift;
+  my $uniprot_acc = shift;
+  my $log = $self->_logger;
+  $log->info( "Getting canonical sequence for UniProtKB accession '$uniprot_acc' ... " );
+  my $url = "http://www.uniprot.org/uniprot/${uniprot_acc}.fasta";
+  my $query = $self->GET( $url );
+  $log->warn( "FASTA: $query" );
+  return $query;
 }
 
 1;
