@@ -5,7 +5,7 @@ Tool to scan and align a protein sequence against functional families in CATH
 At a glance:
 
 ```
-$ git clone https://github.com/sillitoe/cath-tools-seqscan.git
+$ git clone https://github.com/UCLOrengoGroup/cath-tools-seqscan.git
 $ cd cath-tools-seqscan
 $ ./script/cath-tools-seqscan.pl --in=t/P03372.fa --max_hits=10 --max_aln=3
 ```
